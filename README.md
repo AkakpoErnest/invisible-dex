@@ -1,10 +1,10 @@
 # 🚀 Getting Started with Invisible DEX
 
-## Welcome!
+## Welcome
 
-You're about to build **The Invisible DEX** - a cutting-edge hybrid prediction market platform that combines Sui's high-performance blockchain with Yellow Network's state channels for ultra-fast, low-cost betting on live events.
+This repo is a **build guide and codebase** for building **The Invisible DEX** yourself — a hybrid prediction market (Sui + Yellow Network) for fast, low-cost betting on live events. You're building the app on your machine; this README is for you as the developer, not for showing or demoing anything to others.
 
-This guide will get you from zero to a working application in under 30 minutes.
+Use this guide to go from zero to a working application in under 30 minutes.
 
 ---
 
@@ -40,35 +40,31 @@ A true hybrid architecture:
 ### Path 1: Automated Setup (Recommended)
 
 ```bash
-# Clone the repository
 git clone https://github.com/AkakpoErnest/invisible-dex.git
 cd invisible-dex
 
-# Run the quick start script
 chmod +x quick-start.sh
 ./quick-start.sh
 ```
 
 The script will:
 
-- ✅ Check all prerequisites
+- ✅ Check prerequisites
 - ✅ Install dependencies
-- ✅ Setup Sui wallet
-- ✅ Configure environment
-- ✅ Deploy contracts
-- ✅ Start development servers
+- ✅ Point you to Sui wallet and env setup
+- ✅ Guide you through deploy and dev servers
 
 **Time:** ~10 minutes
 
 ### Path 2: Manual Setup
 
-Follow the detailed step-by-step guide in [SETUP.md](./SETUP.md)
+Follow the step-by-step guide in [SETUP.md](./SETUP.md) to build and run everything yourself.
 
-**Time:** ~20-30 minutes
+**Time:** ~20–30 minutes
 
-### Path 3: Just Browse the Code
+### Path 3: Explore the Code First
 
-All code is fully functional and well-documented. Start exploring:
+If you prefer to read before running, the codebase is documented:
 
 - **Smart contracts:** `contracts/sources/`
 - **Frontend:** `frontend/src/`
@@ -254,15 +250,15 @@ cd server && npm run dev
 cd frontend && npm run dev
 ```
 
-### Step 6: Test the Application (5 min)
+### Step 6: Run and Test Locally (5 min)
 
-Open http://localhost:5173
+Open http://localhost:5173 on your machine and confirm:
 
-1. Connect wallet ✓
-2. View test market ✓
-3. Place a bet ✓
-4. See real-time updates ✓
-5. Verify settlement ✓
+1. Wallet connects ✓
+2. Test market loads ✓
+3. You can place a bet ✓
+4. Real-time updates work ✓
+5. Settlement flow works ✓
 
 ---
 
@@ -413,64 +409,7 @@ Need more help? See [SETUP.md](./SETUP.md)
 
 ## 🤝 Contributing
 
-We welcome contributions! Areas where you can help:
-
-**Frontend**
-
-- Improve 3D graphics
-- Add more chart types
-- Better mobile experience
-
-**Backend**
-
-- Optimize Yellow Network integration
-- Add caching layer
-- Improve error handling
-
-**Smart Contracts**
-
-- Gas optimization
-- Add new market types
-- Enhance security
-
-**Documentation**
-
-- More code examples
-- Video tutorials
-- Translations
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-
----
-
-## 🏆 ETHGlobal Submission Checklist
-
-### Before submitting to ETHGlobal:
-
-**Required**
-
-- [ ] Working smart contracts (no mock data)
-- [ ] Live testnet deployment
-- [ ] Functional UI connecting to real blockchain
-- [ ] Yellow Network integration active
-- [ ] Video demo (record 2-3 min walkthrough)
-- [x] README with clear setup instructions ✓
-- [x] Source code on GitHub ✓
-
-**Bonus Points**
-
-- [ ] 3D visualization working
-- [ ] Real-time betting demonstrated
-- [ ] Settlement PTB shown on explorer
-- [ ] Multiple markets created
-- [ ] User can win actual testnet tokens
-
-**Documentation**
-
-- [ ] Architecture diagram included
-- [ ] API endpoints documented
-- [ ] Deployment process clear
-- [ ] Innovation clearly explained
+If you later open-source or share this project, see [CONTRIBUTING.md](./CONTRIBUTING.md). While building, you might extend it with: more frontend features (3D, charts), better Yellow integration, contract optimizations, or docs.
 
 ---
 
@@ -499,71 +438,61 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ---
 
-## 📊 Success Metrics
+## 📊 Build Success
 
-Your implementation is successful when:
+Your build is in good shape when:
 
 - ✅ **Speed:** Bets execute in <100ms
 - ✅ **Cost:** Settlement costs <$0.01 for 100 bets
 - ✅ **Scale:** Can handle 100+ simultaneous bets
-- ✅ **UX:** Users don't notice the hybrid architecture
+- ✅ **UX:** The hybrid architecture feels seamless
 - ✅ **Security:** All settlements verified on-chain
 
 ---
 
-## 🎉 Next Steps
+## 🎉 Next Steps (Your Build Plan)
 
-You've got your development environment ready. Here's what to do next:
+With the dev environment ready, you can work through:
 
-**Week 1: Core Functionality**
+**Week 1: Core**
 
-- Complete smart contract deployment
+- Finish smart contract deployment
 - Implement basic betting UI
 - Connect Yellow Network
 - Test settlement flow
 
 **Week 2: Enhancement**
 
-- Add real-time odds updates
-- Implement position tracking
-- Add 3D visualization
-- Polish UI/UX
+- Real-time odds updates
+- Position tracking
+- Optional 3D visualization
+- UI polish
 
-**Week 3: Testing & Deployment**
+**Week 3: Testing**
 
-- Comprehensive testing
-- Deploy to testnet
-- Beta user testing
-- Documentation polish
+- Broader testing
+- Optional testnet deploy for your own use
+- Refine docs for yourself
 
-**Week 4: Launch**
+**Week 4: Optional**
 
-- Production deployment
-- Marketing materials
-- Community engagement
-- Iterate based on feedback
+- Deploy for your own use
+- Extend features as you like
 
 ---
 
-## 📞 Support & Community
+## 📞 Resources While You Build
 
-**Get Help**
+**If you need help**
 
-- **Discord:** [Join our Discord](https://discord.gg/invisible-dex)
-- **GitHub Issues:** [Report bugs or request features](https://github.com/AkakpoErnest/invisible-dex/issues)
-- **Email:** support@invisible-dex.io
+- [GitHub Issues](https://github.com/AkakpoErnest/invisible-dex/issues) – bugs or questions about the codebase
 
-**Stay Updated**
-
-- **Twitter:** [@InvisibleDEX](https://twitter.com/InvisibleDEX)
-- **Blog:** blog.invisible-dex.io
-
-**Sui Community**
+**Sui**
 
 - [Sui Discord](https://discord.gg/sui)
 - [Sui Forum](https://forum.sui.io)
 
-**Yellow Network Community**
+**Yellow Network**
 
 - [Yellow Discord](https://discord.gg/yellow)
 - [Yellow Telegram](https://t.me/yellow_network)
@@ -578,29 +507,23 @@ This project is licensed under the MIT License - see [LICENSE](./LICENSE) file f
 
 ## 🙏 Acknowledgments
 
-- Sui Foundation for the amazing blockchain platform
+- Sui Foundation for the blockchain platform
 - Yellow Network for state channel infrastructure
-- ETHGlobal for the opportunity
 - Cursor AI for development assistance
-- You for building something awesome!
 
 ---
 
-## ⏭️ What's Next?
-
-Ready to start building?
+## ⏭️ Start Building
 
 ```bash
-# Get the code
 git clone https://github.com/AkakpoErnest/invisible-dex.git
 cd invisible-dex
 
-# Run quick start
 ./quick-start.sh
 
-# Or follow detailed guide
+# or follow the detailed guide
 cat SETUP.md
 
-# Start coding!
+# then code
 cursor .  # or: code .
 ```
