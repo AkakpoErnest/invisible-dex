@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Market } from "../services/api";
-import { listMarkets } from "../services/api";
+import type { Market } from "../../services/api";
+import { listMarkets } from "../../services/api";
 import { MarketCard } from "./MarketCard";
 
 export function MarketsList() {

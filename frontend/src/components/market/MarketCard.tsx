@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { Market } from "../services/api";
-import { placeBet } from "../services/api";
+import type { Market } from "../../services/api";
+import { placeBet } from "../../services/api";
 
 type Props = { market: Market };
 
