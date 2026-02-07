@@ -8,8 +8,14 @@
     "build:all": "npm run build:contracts && cd frontend && npm run build && cd ../server && npm run build",
     "build:contracts": "cd contracts && sui move build",
     "test:integration": "node scripts/run-integration-test.js",
+    "test:yellow": "node scripts/test-yellow.js",
     "dev:server": "cd server && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev"
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:all": "npx concurrently --names \"server,frontend\" -c \"cyan,magenta\" \"npm run dev:server\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "ws": "^8.18.0"
   },
   "keywords": [
     "sui",
