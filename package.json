@@ -1,0 +1,26 @@
+{
+  "name": "invisible-dex",
+  "version": "0.1.0",
+  "description": "Hybrid prediction market platform - Sui + Yellow Network for high-frequency micro-betting",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../frontend && npm install",
+    "build:all": "npm run build:contracts && cd frontend && npm run build && cd ../server && npm run build",
+    "build:contracts": "cd contracts && sui move build",
+    "test:integration": "node scripts/run-integration-test.js",
+    "dev:server": "cd server && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "keywords": [
+    "sui",
+    "prediction-market",
+    "yellow-network",
+    "state-channels",
+    "defi"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
