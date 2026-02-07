@@ -18,7 +18,14 @@ app.use(express.json());
 app.use("/api", apiRouter);
 
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok", service: "invisible-dex-server" });
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    service: "invisible-dex-server",
+    sui: { connected: true, network: process.env.SUI_NETWORK ?? "testnet", latency: 0 },
+    yellow: { connected: Boolean(process.env.YELLOW_API_KEY), latency: 0 },
+    database: { connected: false },
+  });
 });
 
 const port = Number(process.env.PORT) || 3001;
