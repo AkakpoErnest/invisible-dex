@@ -27,15 +27,36 @@ cd frontend
 cp .env.example .env
 ```
 
-### 2. Deploy the contracts and get the Package ID
+### 2. Install Sui CLI and create a dev wallet (if needed)
+
+**Install Sui CLI (pick one):**
 
 ```bash
-# Create/use a Sui address and get testnet tokens
+brew install sui
+```
+
+or with Cargo:
+
+```bash
+cargo install --locked --git https://github.com/MystenLabs/sui.git sui
+```
+
+**Create a dev wallet:**
+
+```bash
 sui client new-address ed25519
+```
+
+Save the recovery phrase somewhere safe. Then switch to testnet and get tokens:
+
+```bash
 sui client switch --env testnet
 sui client faucet
+```
 
-# Deploy from the contracts folder
+### 3. Deploy the contracts and get the Package ID
+
+```bash
 cd contracts
 sui move build
 sui client publish --gas-budget 100000000
@@ -43,12 +64,12 @@ sui client publish --gas-budget 100000000
 
 In the output, copy the **Package ID** (starts with `0x`).
 
-### 3. Put the Package ID in both `.env` files
+### 4. Put the Package ID in both `.env` files
 
 - **server/.env** – set `PREDICTION_MARKET_PACKAGE=<the_package_id_you_copied>`
 - **frontend/.env** – set `VITE_SUI_PACKAGE_ID=<the_same_package_id>`
 
-### 4. (Optional) Backend signer
+### 5. (Optional) Backend signer
 
 If you want the server to sign transactions (e.g. settlements):
 
@@ -59,11 +80,11 @@ sui keytool export --address <that_address>
 
 Put the exported key in **server/.env** as `SUI_PRIVATE_KEY=suiprivkey1...`. Do not commit this file.
 
-### 5. (Optional) Yellow Network
+### 6. (Optional) Yellow Network
 
 If you have a Yellow API key, put it in **server/.env** as `YELLOW_API_KEY=...`. Leave it empty otherwise.
 
-### 6. Run the app
+### 7. Run the app
 
 ```bash
 # From project root
@@ -73,7 +94,7 @@ npm run dev:all
 - Backend: http://localhost:3001  
 - Frontend: http://localhost:5173  
 
-### 7. When you deploy to production
+### 8. When you deploy to production
 
 - In **frontend/.env** (or your host’s env): set `VITE_API_URL` and `VITE_WS_URL` to your deployed backend URL (e.g. `https://api.yourdomain.com` and `wss://api.yourdomain.com`).
 - In **server/.env**: set `CORS_ORIGIN` to your frontend URL (e.g. `https://app.yourdomain.com`).
