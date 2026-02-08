@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Transaction } from "@mysten/sui/transactions";
 import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { createMarket } from "../../services/api";
@@ -7,10 +7,14 @@ import { useSuiWallet } from "../../hooks/useSuiWallet";
 type Props = {
   apiUrl: string;
   onCreated: () => void;
+  initialQuestion?: string | null;
 };
 
-export function CreateMarketForm({ apiUrl, onCreated }: Props) {
+export function CreateMarketForm({ apiUrl, onCreated, initialQuestion }: Props) {
   const [question, setQuestion] = useState("");
+  useEffect(() => {
+    if (initialQuestion) setQuestion(initialQuestion);
+  }, [initialQuestion]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);

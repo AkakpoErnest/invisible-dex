@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import type { Market, Bet } from "../../services/api";
 import { placeBet, listBets } from "../../services/api";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { WalletConnect } from "../wallet/WalletConnect";
 
 type Props = { market: Market };
 
@@ -46,6 +47,10 @@ export function MarketCard({ market }: Props) {
 
   const handleBet = async () => {
     setMessage(null);
+    if (!address) {
+      setMessage("Connect your wallet to place a bet.");
+      return;
+    }
     if (!isAmountValid) {
       setMessage("Enter an amount greater than 0.");
       return;
@@ -53,7 +58,7 @@ export function MarketCard({ market }: Props) {
     setSubmitting(true);
     const apiUrl = import.meta.env.VITE_API_URL ?? "/api";
     try {
-      await placeBet(apiUrl, { marketId: market.id, outcome, amount, user: address ?? undefined });
+      await placeBet(apiUrl, { marketId: market.id, outcome, amount, user: address });
       setMessage("Bet placed.");
       setAmount("");
       loadBets();
@@ -65,8 +70,8 @@ export function MarketCard({ market }: Props) {
   };
 
   return (
-    <li className="card-3d group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(6,12,18,0.35)] backdrop-blur">
-      <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl transition duration-500 group-hover:bg-amber-300/30" />
+    <li className="card-3d group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(6,12,18,0.35)]">
+      <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-emerald-400/15 blur-2xl transition duration-300 group-hover:bg-amber-300/20" />
       <div className="relative">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -155,9 +160,15 @@ export function MarketCard({ market }: Props) {
               <h3 className="mb-1 text-sm font-semibold uppercase tracking-wider text-slate-200">
                 Place bet
               </h3>
-              <p className="mb-4 text-xs text-slate-500">
-                You need a connected Sui wallet and SUI for gas to place bets.
-              </p>
+              {!address ? (
+                <>
+                  <p className="mb-4 text-xs text-slate-400">
+                    Connect your wallet when you’re ready to place a bet.
+                  </p>
+                  <WalletConnect />
+                </>
+              ) : (
+              <>
               <div className="space-y-4">
                 <div>
                   <p className="mb-1.5 text-xs font-medium text-slate-400">Outcome</p>
@@ -217,6 +228,8 @@ export function MarketCard({ market }: Props) {
                 <p className={`mt-4 text-sm ${message.startsWith("Bet placed") ? "text-emerald-300" : "text-amber-300"}`}>
                   {message}
                 </p>
+              )}
+              </>
               )}
             </div>
           </div>

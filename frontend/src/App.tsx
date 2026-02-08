@@ -1,77 +1,118 @@
+import { useState, useCallback, useRef, useEffect } from "react";
 import { MarketsList } from "./components/market/MarketsList";
 import { CreateMarketForm } from "./components/market/CreateMarketForm";
 import { WalletConnect } from "./components/wallet/WalletConnect";
 import { BalanceDisplay } from "./components/wallet/BalanceDisplay";
 import { useMarkets } from "./hooks/useMarkets";
 import { useSuiWallet } from "./hooks/useSuiWallet";
+import { listEvents, type Event } from "./services/api";
 
 function App() {
-  const { isConnected } = useSuiWallet();
+  useSuiWallet();
   const { markets, loading, error, refresh, apiUrl } = useMarkets();
   const network = import.meta.env.VITE_SUI_NETWORK ?? "testnet";
+  const [events, setEvents] = useState<Event[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [eventsError, setEventsError] = useState<string | null>(null);
+  const [prefillQuestion, setPrefillQuestion] = useState<string | null>(null);
+  const [introVisible, setIntroVisible] = useState(true);
+  const [introBreaking, setIntroBreaking] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const bgVideoRef = useRef<HTMLVideoElement>(null);
+  const [videoFailed, setVideoFailed] = useState(false);
+
+  // Ensure background video plays (required for autoplay in some browsers)
+  useEffect(() => {
+    const video = bgVideoRef.current;
+    if (!video) return;
+    const play = () => video.play().catch(() => setVideoFailed(true));
+    if (video.readyState >= 2) play();
+    else video.addEventListener("loadeddata", play);
+    return () => video.removeEventListener("loadeddata", play);
+  }, []);
+
+  const loadEvents = useCallback(async () => {
+    setEventsLoading(true);
+    setEventsError(null);
+    try {
+      const { events: list } = await listEvents(apiUrl, "PL");
+      setEvents(list ?? []);
+    } catch (e) {
+      setEventsError(e instanceof Error ? e.message : "Could not load events");
+      setEvents([]);
+    } finally {
+      setEventsLoading(false);
+    }
+  }, [apiUrl]);
+
+  const createMarketForEvent = (ev: Event) => {
+    setPrefillQuestion(`Will ${ev.home} beat ${ev.away}?`);
+    document.getElementById("create")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleIntroClick = () => {
+    if (!introVisible || introBreaking) return;
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    if (reduceMotion) {
+      setIntroVisible(false);
+      return;
+    }
+    setIntroBreaking(true);
+    window.setTimeout(() => {
+      setIntroVisible(false);
+      setShowWelcome(true);
+    }, 900);
+    // Hide welcome animation after it plays
+    window.setTimeout(() => setShowWelcome(false), 3800);
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Full-screen background video */}
+      {/* Full-screen background: video + ring animation + dark overlay */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-0"
+        className="pointer-events-none fixed inset-0 z-0 isolate bg-[var(--bg-0)]"
+        style={{ contain: "strict", transform: "translateZ(0)" }}
       >
+        {/* Animated gradient orbs (always visible; stronger when video fails) */}
+        <div
+          className={`absolute inset-0 bg-orb-animated ${videoFailed ? "opacity-100" : "opacity-70"}`}
+          aria-hidden
+        />
+        {/* Video layer */}
         <video
+          ref={bgVideoRef}
           autoPlay
           muted
           loop
           playsInline
+          preload="auto"
+          disablePictureInPicture
           className="absolute inset-0 h-full w-full object-cover"
-          src="/background.mp4"
-        />
+          style={{ objectFit: "cover" }}
+          aria-hidden
+          onError={() => setVideoFailed(true)}
+        >
+          <source src="/background-video.mp4" type="video/mp4" />
+          <source src="/background-video.mov" type="video/quicktime" />
+        </video>
+        {/* Ring animations – on top of video so always visible */}
+        <div className="bg-ring" aria-hidden />
+        <div className="bg-ring-outer" aria-hidden />
+        {/* Very dark overlay so text is readable */}
         <div
-          className="absolute inset-0 bg-[var(--bg-0)]/70"
+          className="absolute inset-0 bg-[var(--bg-0)]/99"
+          aria-hidden
+        />
+        {/* Extra ash/dark layer for deeper contrast */}
+        <div
+          className="absolute inset-0 bg-black/80"
           aria-hidden
         />
       </div>
-      <div aria-hidden className="pointer-events-none z-[1] ring-field">
-        <span className="ring ring-1" />
-        <span className="ring ring-2" />
-        <span className="ring ring-3" />
-      </div>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -left-24 top-24 z-[1] h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl orb-drift"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-24 top-10 z-[1] h-64 w-64 rounded-full bg-amber-300/10 blur-3xl orb-drift-slow"
-      />
 
-      {!isConnected ? (
-        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-12">
-          <div className="glass-panel w-full max-w-md rounded-3xl border border-white/10 p-8 text-center">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-300 via-cyan-300 to-amber-300 text-2xl font-semibold text-slate-900">
-              ID
-            </div>
-            <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Invisible DEX</p>
-            <p className="mt-2 text-sm text-slate-400">
-              High-frequency prediction betting: instant off-chain via Yellow, settled on Sui.
-            </p>
-            <h1 className="mt-4 font-display text-2xl text-slate-100">Connect your Sui wallet</h1>
-            <p className="mt-3 text-sm text-slate-400">
-              To create markets and place bets you need:
-            </p>
-            <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-300">
-              <li>A <strong>Sui wallet</strong> (e.g. Sui Wallet, Ethos)</li>
-              <li>Wallet connected to <strong>{network}</strong></li>
-              <li><strong>SUI</strong> for gas (use <a href="https://faucet.sui.io" target="_blank" rel="noopener noreferrer" className="text-emerald-300 underline hover:text-emerald-200">faucet.sui.io</a> for testnet SUI)</li>
-            </ul>
-            <p className="mt-3 text-xs text-slate-500">
-              Sui is required. Yellow off-chain execution is optional.
-            </p>
-            <div className="mt-8">
-              <WalletConnect />
-            </div>
-          </div>
-        </div>
-      ) : (
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-6 pb-16 pt-8 lg:px-10">
         <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between reveal-up">
           <div className="flex items-center gap-4">
@@ -139,6 +180,43 @@ function App() {
           </div>
         </section>
 
+        <section className="mt-14">
+          <h2 className="font-display text-2xl text-slate-100">Games to bet on</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            Load fixtures from the scores API, then create a market for a game.
+          </p>
+          <button
+            type="button"
+            onClick={() => void loadEvents()}
+            disabled={eventsLoading}
+            className="mt-3 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-300/40 hover:bg-white/10 disabled:opacity-50"
+          >
+            {eventsLoading ? "Loading…" : "Load games (Premier League)"}
+          </button>
+          {eventsError && (
+            <p className="mt-2 text-sm text-amber-300">{eventsError}</p>
+          )}
+          {events.length > 0 && (
+            <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {events.slice(0, 12).map((ev) => (
+                <li
+                  key={ev.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                >
+                  <span className="truncate text-sm text-slate-200">{ev.title}</span>
+                  <button
+                    type="button"
+                    onClick={() => createMarketForEvent(ev)}
+                    className="shrink-0 rounded-lg bg-emerald-500/20 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/30"
+                  >
+                    Create market
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
         <section id="create" className="mt-14">
           <h2 className="font-display text-3xl text-slate-100">Create a new prediction market</h2>
           <p className="mt-2 text-sm text-slate-400">
@@ -147,7 +225,8 @@ function App() {
           <div className="mt-6">
             <CreateMarketForm
               apiUrl={apiUrl}
-              onCreated={() => void refresh()}
+              onCreated={() => { refresh(); setPrefillQuestion(null); }}
+              initialQuestion={prefillQuestion}
             />
           </div>
         </section>
@@ -181,6 +260,50 @@ function App() {
           </div>
         </footer>
       </div>
+      {introVisible && (
+        <div
+          className={`intro-overlay${introBreaking ? " is-breaking" : ""}`}
+          role="presentation"
+        >
+          <div className="intro-vignette" aria-hidden />
+          <button
+            type="button"
+            className="intro-glass"
+            onClick={handleIntroClick}
+            disabled={introBreaking}
+            aria-label="Enter Invisible DEX"
+          >
+            <div className="intro-badge">ID</div>
+            <p className="intro-kicker">Invisible DEX</p>
+            <h2 className="intro-title">Welcome</h2>
+            <p className="intro-subtitle">
+              High-frequency prediction betting: instant off-chain via Yellow,
+              settled on Sui.
+            </p>
+            <p className="intro-hint">Tap the glass to enter</p>
+            <span className="intro-cracks" aria-hidden />
+            <span className="intro-shards" aria-hidden>
+              <span className="intro-shard shard-1" />
+              <span className="intro-shard shard-2" />
+              <span className="intro-shard shard-3" />
+              <span className="intro-shard shard-4" />
+              <span className="intro-shard shard-5" />
+              <span className="intro-shard shard-6" />
+            </span>
+          </button>
+        </div>
+      )}
+      {showWelcome && (
+        <div
+          className="welcome-animation"
+          role="presentation"
+          aria-live="polite"
+        >
+          <div className="welcome-animation-inner">
+            <p className="welcome-animation-kicker">Invisible DEX</p>
+            <h2 className="welcome-animation-title">Welcome</h2>
+          </div>
+        </div>
       )}
     </div>
   );

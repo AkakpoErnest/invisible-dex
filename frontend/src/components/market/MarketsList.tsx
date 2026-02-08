@@ -27,11 +27,17 @@ export function MarketsList({ markets, loading, error }: Props) {
   }
 
   if (error) {
+    const isBackendNotConnected = error.includes("Backend not connected") || error.includes("VITE_API_URL");
     return (
       <div className="glass-panel rounded-3xl border border-white/10 p-6 text-slate-200">
         <p className="text-sm uppercase tracking-[0.3em] text-amber-200/70">API error</p>
         <p className="mt-3 text-lg font-semibold">We could not load markets.</p>
-        <p className="mt-2 text-sm text-slate-400">Message: {error}</p>
+        <p className="mt-2 text-sm text-slate-400">{error}</p>
+        {isBackendNotConnected && (
+          <p className="mt-4 text-xs text-slate-500">
+            On Vercel: add env var <code className="rounded bg-white/10 px-1">VITE_API_URL</code> = your backend URL (e.g. Railway), then redeploy. See docs/DEPLOY_VERCEL.md.
+          </p>
+        )}
       </div>
     );
   }
