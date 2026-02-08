@@ -1,98 +1,83 @@
-# Post-launch checklist – what to configure after you run the app
+# What You Need to Provide & Instructions
 
-Use this list once the app is running locally or after you deploy. Fill in real values and keep them out of git (use `.env`, never commit secrets).
+## What you need
 
----
-
-## 1. Sui (testnet / mainnet)
-
-| Where | Variable | What to put |
-|-------|----------|-------------|
-| **server/.env** | `SUI_NETWORK` | `testnet` or `mainnet` |
-| **server/.env** | `SUI_RPC_URL` | e.g. `https://fullnode.testnet.sui.io:443` |
-| **server/.env** | `PREDICTION_MARKET_PACKAGE` | Package ID from `sui client publish` (e.g. `0x...`) |
-| **server/.env** | `SUI_PRIVATE_KEY` | From `sui keytool export --address <addr>` (backend signer; **never commit**) |
-| **frontend/.env** | `VITE_SUI_PACKAGE_ID` or `VITE_PREDICTION_MARKET_PACKAGE` | Same Package ID as above |
-| **frontend/.env** | `VITE_SUI_NETWORK` | `testnet` or `mainnet` |
-| **frontend/.env** | `VITE_SUI_RPC_URL` | Same RPC URL as server (if you use a custom one) |
+1. **Sui Package ID** – You get this after deploying the contracts (see below). Put it in both server and frontend `.env`.
+2. **Sui private key** (optional, for backend signer) – From `sui keytool export --address <your_address>`. Put only in `server/.env`. Never commit it.
+3. **Yellow API key** (optional) – From the Yellow Network dashboard. Put in `server/.env` if you use Yellow.
+4. **Backend URL** (only for production) – When you deploy the backend, put that URL in the frontend `.env` as `VITE_API_URL` and `VITE_WS_URL` (same host, `https`/`wss` for production).
 
 ---
 
-## 2. Yellow Network
+## Instructions
 
-| Where | Variable | What to put |
-|-------|----------|-------------|
-| **server/.env** | `YELLOW_WS_ENDPOINT` | e.g. `wss://clearnet.yellow.com/ws` |
-| **server/.env** | `YELLOW_API_KEY` | Your Yellow API key (from Yellow dashboard) |
-| **server/.env** | `YELLOW_TIMEOUT` | Optional, e.g. `30000` (ms) |
-| **frontend/.env** | `VITE_YELLOW_WS_ENDPOINT` | Same WebSocket URL (if frontend talks to Yellow directly) |
-| **frontend/.env** | `VITE_YELLOW_API_KEY` | Only if the frontend needs it (usually backend only) |
+### 1. Create `.env` files
 
----
+**Server**
 
-## 3. API URLs (after deployment)
-
-| Where | Variable | What to put |
-|-------|----------|-------------|
-| **frontend/.env** | `VITE_API_BASE_URL` or `VITE_API_URL` | Backend URL, e.g. `https://api.yourdomain.com` (prod) or `http://localhost:3001` (dev) |
-| **frontend/.env** | `VITE_WS_URL` | WebSocket URL, e.g. `wss://api.yourdomain.com` (prod) or `ws://localhost:3001` (dev) |
-| **server/.env** | `CORS_ORIGIN` | Frontend origin, e.g. `https://app.yourdomain.com` (prod) or `http://localhost:5173` (dev) |
-
----
-
-## 4. Optional / feature flags
-
-| Where | Variable | What to put |
-|-------|----------|-------------|
-| **frontend/.env** | `VITE_ENABLE_3D_GRAPHICS` | `true` or `false` |
-| **frontend/.env** | `VITE_DEBUG_MODE` | `true` (dev) or `false` (prod) |
-| **server/.env** | `LOG_LEVEL` | e.g. `debug` (dev) or `info` (prod) |
-| **server/.env** | `NODE_ENV` | `development` or `production` |
-
----
-
-## 5. After first contract deploy
-
-1. Run `sui client publish --gas-budget 100000000` from `contracts/`.
-2. Copy the **Package ID** from the output.
-3. Put it in **server** and **frontend** `.env` as above.
-4. (Optional) If your contract has AdminCap / OracleCap, note those object IDs for admin/oracle calls.
-
----
-
-## 6. Before going to production
-
-- [ ] All `.env` files use production URLs and keys; no dev secrets in repo.
-- [ ] `CORS_ORIGIN` on server matches your production frontend URL.
-- [ ] Frontend `VITE_API_URL` and `VITE_WS_URL` point to the production backend.
-- [ ] Sui network and RPC match (testnet vs mainnet).
-- [ ] Yellow API key is for the right environment.
-
----
-
-## Quick reference: minimal dev .env
-
-**server/.env (minimal for local):**
-
-```env
-PORT=3001
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:5173
-SUI_NETWORK=testnet
-SUI_RPC_URL=https://fullnode.testnet.sui.io:443
-PREDICTION_MARKET_PACKAGE=
-YELLOW_WS_ENDPOINT=wss://clearnet.yellow.com/ws
-YELLOW_API_KEY=
+```bash
+cd server
+cp .env.example .env
 ```
 
-**frontend/.env (minimal for local):**
+**Frontend**
 
-```env
-VITE_API_URL=http://localhost:3001
-VITE_WS_URL=ws://localhost:3001
-VITE_SUI_NETWORK=testnet
-VITE_SUI_PACKAGE_ID=
-VITE_PREDICTION_MARKET_PACKAGE=
+```bash
+cd frontend
+cp .env.example .env
 ```
 
-Fill in `PREDICTION_MARKET_PACKAGE` and `VITE_SUI_PACKAGE_ID` / `VITE_PREDICTION_MARKET_PACKAGE` after you deploy the contracts.
+### 2. Deploy the contracts and get the Package ID
+
+```bash
+# Create/use a Sui address and get testnet tokens
+sui client new-address ed25519
+sui client switch --env testnet
+sui client faucet
+
+# Deploy from the contracts folder
+cd contracts
+sui move build
+sui client publish --gas-budget 100000000
+```
+
+In the output, copy the **Package ID** (starts with `0x`).
+
+### 3. Put the Package ID in both `.env` files
+
+- **server/.env** – set `PREDICTION_MARKET_PACKAGE=<the_package_id_you_copied>`
+- **frontend/.env** – set `VITE_SUI_PACKAGE_ID=<the_same_package_id>`
+
+### 4. (Optional) Backend signer
+
+If you want the server to sign transactions (e.g. settlements):
+
+```bash
+sui client active-address
+sui keytool export --address <that_address>
+```
+
+Put the exported key in **server/.env** as `SUI_PRIVATE_KEY=suiprivkey1...`. Do not commit this file.
+
+### 5. (Optional) Yellow Network
+
+If you have a Yellow API key, put it in **server/.env** as `YELLOW_API_KEY=...`. Leave it empty otherwise.
+
+### 6. Run the app
+
+```bash
+# From project root
+npm run dev:all
+```
+
+- Backend: http://localhost:3001  
+- Frontend: http://localhost:5173  
+
+### 7. When you deploy to production
+
+- In **frontend/.env** (or your host’s env): set `VITE_API_URL` and `VITE_WS_URL` to your deployed backend URL (e.g. `https://api.yourdomain.com` and `wss://api.yourdomain.com`).
+- In **server/.env**: set `CORS_ORIGIN` to your frontend URL (e.g. `https://app.yourdomain.com`).
+
+---
+
+**Summary:** Copy `.env.example` to `.env` in both `server` and `frontend`, deploy contracts, paste the Package ID in both `.env` files, then run `npm run dev:all`. Add private key and Yellow key only if you need them.
