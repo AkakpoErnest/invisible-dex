@@ -5,7 +5,7 @@ module invisible_dex::prediction_market {
     use std::string::{String, utf8};
     use sui::balance::{Balance, join, split, value, zero};
     use sui::coin::{Coin, from_balance, into_balance, value as coin_value};
-    use sui::object::{self, ID, UID};
+    use sui::object;
     use sui::transfer;
     use sui::tx_context::{sender, TxContext};
     use sui::event;
@@ -28,8 +28,8 @@ module invisible_dex::prediction_market {
     // ============== Structs ==============
 
     /// Shared market: anyone can place bets; only creator can resolve.
-    struct PredictionMarket<phantom T> has key, store {
-        id: UID,
+    public struct PredictionMarket<phantom T> has key, store {
+        id: object::UID,
         question: String,
         creator: address,
         resolved: bool,
@@ -39,35 +39,35 @@ module invisible_dex::prediction_market {
     }
 
     /// A user's position in a market. Transfer to user; they use it to claim if they win.
-    struct Position<phantom T> has key, store {
-        id: UID,
-        market_id: ID,
+    public struct Position<phantom T> has key, store {
+        id: object::UID,
+        market_id: object::ID,
         outcome: u8,
         amount: Balance<T>,
     }
 
     // ============== Events ==============
 
-    struct MarketCreated<phantom T> has copy, drop, store {
-        market_id: ID,
+    public struct MarketCreated<phantom T> has copy, drop, store {
+        market_id: object::ID,
         question: String,
         creator: address,
     }
 
-    struct BetPlaced<phantom T> has copy, drop, store {
-        market_id: ID,
+    public struct BetPlaced<phantom T> has copy, drop, store {
+        market_id: object::ID,
         better: address,
         outcome: u8,
         amount: u64,
     }
 
-    struct MarketResolved<phantom T> has copy, drop, store {
-        market_id: ID,
+    public struct MarketResolved<phantom T> has copy, drop, store {
+        market_id: object::ID,
         winning_outcome: u8,
     }
 
-    struct Claimed<phantom T> has copy, drop, store {
-        market_id: ID,
+    public struct Claimed<phantom T> has copy, drop, store {
+        market_id: object::ID,
         claimer: address,
         amount: u64,
     }
@@ -177,7 +177,7 @@ module invisible_dex::prediction_market {
 
         let Position { id, market_id, amount, .. } = position;
         let amount_val = value(&amount);
-        let coin = from_balance(amount);
+        let coin = from_balance(amount, ctx);
         transfer::public_transfer(coin, sender(ctx));
 
         event::emit(Claimed<T> {

@@ -41,18 +41,24 @@ or with Cargo:
 cargo install --locked --git https://github.com/MystenLabs/sui.git sui
 ```
 
-**Create a dev wallet:**
+**Create a dev wallet** (if you don’t have one):
 
 ```bash
 sui client new-address ed25519
 ```
 
-Save the recovery phrase somewhere safe. Then switch to testnet and get tokens:
+Save the recovery phrase. Switch to testnet and get tokens:
 
 ```bash
 sui client switch --env testnet
-sui client faucet
 ```
+
+Testnet tokens are via the **web faucet** (CLI no longer mints). Open this URL (replace with your address if different):
+
+**https://faucet.sui.io/?address=YOUR_SUI_ADDRESS**
+
+Or run `sui client active-address` and open:  
+`https://faucet.sui.io/?address=<paste_that_address>`
 
 ### 3. Deploy the contracts and get the Package ID
 
