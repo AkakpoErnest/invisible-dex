@@ -1,10 +1,21 @@
 import { useState, useEffect, useCallback } from "react";
+import { Transaction } from "@mysten/sui/transactions";
+import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import type { Market, Bet } from "../../services/api";
-import { placeBet, listBets } from "../../services/api";
+import { listBets } from "../../services/api";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 import { WalletConnect } from "../wallet/WalletConnect";
 
 type Props = { market: Market };
+
+const PACKAGE_ID =
+  import.meta.env.VITE_PREDICTION_MARKET_PACKAGE ?? import.meta.env.VITE_SUI_PACKAGE_ID ?? "";
+const COIN_TYPE = "0x2::sui::SUI";
+
+/** Sui object IDs are 0x + 64 hex chars */
+function isOnChainMarket(id: string): boolean {
+  return /^0x[a-fA-F0-9]{64}$/.test(id);
+}
 
 function shortenAddress(addr: string, head = 6, tail = 4): string {
   if (!addr || addr.length <= head + tail) return addr;
@@ -19,6 +30,9 @@ export function MarketCard({ market }: Props) {
   const [bets, setBets] = useState<Bet[]>([]);
   const [betsLoading, setBetsLoading] = useState(false);
   const { address } = useSuiWallet();
+  const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
+  const suiClient = useSuiClient();
+  const onChainBetEnabled = Boolean(PACKAGE_ID) && isOnChainMarket(market.id);
 
   const loadBets = useCallback(async () => {
     const apiUrl = import.meta.env.VITE_API_URL ?? "/api";
@@ -55,11 +69,29 @@ export function MarketCard({ market }: Props) {
       setMessage("Enter an amount greater than 0.");
       return;
     }
+    if (!onChainBetEnabled) {
+      setMessage("This market is API-only. Create a market with your wallet connected to bet on Sui.");
+      return;
+    }
     setSubmitting(true);
-    const apiUrl = import.meta.env.VITE_API_URL ?? "/api";
     try {
-      await placeBet(apiUrl, { marketId: market.id, outcome, amount, user: address });
-      setMessage("Bet placed.");
+      const amountMist = BigInt(Math.floor(parseFloat(amount) * 1e9));
+      if (amountMist <= 0n) {
+        setMessage("Enter an amount greater than 0.");
+        setSubmitting(false);
+        return;
+      }
+      const tx = new Transaction();
+      const [coin] = tx.splitCoins(tx.gas, [amountMist]);
+      tx.moveCall({
+        target: `${PACKAGE_ID}::prediction_market::place_bet`,
+        typeArguments: [COIN_TYPE],
+        arguments: [tx.object(market.id), coin, tx.pure.u8(outcome)],
+      });
+      const txJson = await tx.toJSON();
+      const result = await signAndExecute({ transaction: txJson });
+      await suiClient.waitForTransaction({ digest: result.digest });
+      setMessage("Bet placed on-chain.");
       setAmount("");
       loadBets();
     } catch (e) {
@@ -181,6 +213,10 @@ export function MarketCard({ market }: Props) {
                   </p>
                   <WalletConnect />
                 </>
+              ) : !onChainBetEnabled ? (
+                <p className="text-sm text-slate-400">
+                  This market is API-only. Create a new market with your wallet connected to get an on-chain market and place bets on Sui.
+                </p>
               ) : (
               <>
               <div className="space-y-4">

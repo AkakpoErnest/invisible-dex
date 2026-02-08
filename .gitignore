@@ -14,3 +14,4 @@ vite.config.js
 
 # Large video assets (use background-video.mp4; .mov exceeds GitHub limit)
 frontend/public/background-video.mov
+.vercel

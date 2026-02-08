@@ -3,6 +3,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { createMarket } from "../../services/api";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { useServerHealth } from "../../hooks/useServerHealth";
 
 type Props = {
   apiUrl: string;
@@ -21,6 +22,7 @@ export function CreateMarketForm({ apiUrl, onCreated, initialQuestion }: Props) 
   const { isConnected } = useSuiWallet();
   const suiClient = useSuiClient();
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
+  const { error: healthError } = useServerHealth();
 
   const packageId =
     import.meta.env.VITE_PREDICTION_MARKET_PACKAGE ??
@@ -28,6 +30,7 @@ export function CreateMarketForm({ apiUrl, onCreated, initialQuestion }: Props) 
     "";
   const coinType = "0x2::sui::SUI";
   const onChainEnabled = Boolean(packageId) && isConnected;
+  const backendUnreachable = Boolean(healthError) && !onChainEnabled;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +102,29 @@ export function CreateMarketForm({ apiUrl, onCreated, initialQuestion }: Props) 
       <p className="mt-2 text-sm text-slate-400">
         Add a yes/no question. Markets are created on Sui when your wallet is connected.
       </p>
+
+      {backendUnreachable && (
+        <div
+          className="mt-4 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-left"
+          role="status"
+        >
+          <p className="text-sm font-medium text-amber-200/95">
+            Backend not connected
+          </p>
+          <p className="mt-1.5 text-xs text-slate-300">
+            To create markets via API (without a wallet), start the server and point the frontend to it:
+          </p>
+          <ol className="mt-2 list-inside list-decimal space-y-1 text-xs text-slate-400">
+            <li>Start the server: <code className="rounded bg-white/10 px-1.5 py-0.5">cd server && npm run dev</code></li>
+            <li>Set <code className="rounded bg-white/10 px-1.5 py-0.5">VITE_API_URL=http://localhost:3001</code> in <code className="rounded bg-white/10 px-1.5 py-0.5">frontend/.env</code></li>
+            <li>Restart the frontend (or run <code className="rounded bg-white/10 px-1.5 py-0.5">npm run dev:all</code> from the project root)</li>
+          </ol>
+          <p className="mt-2 text-xs text-slate-500">
+            Or connect your Sui wallet to create markets on-chain.
+          </p>
+        </div>
+      )}
+
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <label className="flex-1">
           <span className="sr-only">Question</span>
@@ -113,7 +139,7 @@ export function CreateMarketForm({ apiUrl, onCreated, initialQuestion }: Props) 
         </label>
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || backendUnreachable}
           className="rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_8px_20px_rgba(16,185,129,0.25)] transition hover:brightness-110 disabled:opacity-60"
         >
           {submitting ? "Creating…" : "Create market"}

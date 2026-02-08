@@ -1,0 +1,5 @@
+# Ignore large assets that exceed Vercel's 100MB file limit (frontend uses .mp4)
+*.mov
+0208(1).mov
+frontend/public/background-video.mov
+invisible_dex_transparent_icon_3.png

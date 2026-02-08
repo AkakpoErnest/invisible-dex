@@ -16,19 +16,44 @@ This guide covers launching the **frontend** on Vercel. The **backend** (Node/Ex
      **Root Directory:** `frontend`. **Build Command:** `npm run build`. **Output Directory:** `dist`. **Install Command:** `npm install`. Framework: Vite.
    - **Option 2 – Deploy from repo root:**  
      Leave **Root Directory** empty. The repo’s root **vercel.json** will run `cd frontend && npm install && npm run build` and use **Output Directory** `frontend/dist`. No need to set build/output in the dashboard.
-4. **Environment variables** (add in the Vercel project → Settings → Environment Variables):
-
-   | Name | Value | Notes |
-   |------|--------|--------|
-   | `VITE_API_URL` | `https://your-api-url.com` | Your deployed backend URL (no trailing slash). Required for markets/bets. |
-   | `VITE_WS_URL` | `wss://your-api-url.com` | WebSocket URL (same host as API, `wss` in production). |
-   | `VITE_SUI_NETWORK` | `testnet` or `mainnet` | Sui network for the wallet. |
-   | `VITE_SUI_RPC_URL` | (optional) | Override RPC; default is public fullnode for the network above. |
-   | `VITE_SUI_PACKAGE_ID` | (optional) | Set after deploying contracts if you use on-chain markets. |
-
-   Add these for **Production** (and Preview if you want previews to use the same API).
+4. **Environment variables** — add every variable below in **Vercel → Your Project → Settings → Environment Variables**. Use **Production** (and **Preview** if you want). You can add them one by one or paste from the table.
 
 5. **Deploy.** Vercel builds the frontend and deploys it. Your app URL will be like `https://your-project.vercel.app`.
+
+---
+
+### Vercel environment variables (load these in Settings → Environment Variables)
+
+**Quick copy-paste:** See **[docs/VERCEL_ENV_COPY_PASTE.md](VERCEL_ENV_COPY_PASTE.md)** for each Key and Value in a format you can paste straight into the Vercel "Add Environment Variable" modal.
+
+Or use the table below. Copy each **Name** and **Value** into Vercel. Replace placeholders with your real URLs and keys.
+
+| Name | Value (example / placeholder) | Required | Notes |
+|------|--------------------------------|----------|--------|
+| `VITE_API_URL` | `https://your-backend.railway.app` | **Yes** (for API) | Deployed backend URL, no trailing slash. App appends `/api`. |
+| `VITE_WS_URL` | `wss://your-backend.railway.app` | If using WS | WebSocket URL; same host as API, `wss` in production. |
+| `VITE_SUI_NETWORK` | `testnet` or `mainnet` | **Yes** | Sui network for wallet. |
+| `VITE_SUI_RPC_URL` | `https://fullnode.testnet.sui.io:443` | No | Override RPC; optional. |
+| `VITE_SUI_PACKAGE_ID` | `0x7844...` (see contracts) | No | Set if using on-chain markets; from deployed package. |
+| `VITE_PREDICTION_MARKET_PACKAGE` | same as `VITE_SUI_PACKAGE_ID` | No | Same as above; used for create-market. |
+| `VITE_SETTLEMENT_MANAGER_PACKAGE` | `0x...` | No | If you use a separate settlement package. |
+| `VITE_MARKET_FACTORY_PACKAGE` | `0x...` | No | If you use a market factory package. |
+| `VITE_YELLOW_WS_ENDPOINT` | `wss://clearnet.yellow.com/ws` | No | Yellow Network WebSocket. |
+| `VITE_YELLOW_API_KEY` | your Yellow API key | No | If using Yellow state channels. |
+| `VITE_ENABLE_3D_GRAPHICS` | `true` or `false` | No | Default `true`. |
+| `VITE_ENABLE_ANALYTICS` | `false` | No | Default `false`. |
+| `VITE_DEBUG_MODE` | `false` | No | Set `false` in production. |
+
+**Minimum for a working deploy:** set `VITE_API_URL` (your backend URL) and `VITE_SUI_NETWORK` (`testnet` or `mainnet`). Redeploy after changing env vars so the build picks them up.
+
+**How to load these in Vercel:**
+
+1. Open your project on [vercel.com](https://vercel.com) → **Settings** → **Environment Variables**.
+2. For each row in the table above: click **Add New** → choose **Name** (e.g. `VITE_API_URL`) and **Value** (e.g. `https://your-backend.railway.app`).
+3. Select **Production** (and **Preview** if you want branch previews to use the same API).
+4. Save. Trigger a **Redeploy** (Deployments → ⋮ on latest → Redeploy) so the new variables are used in the build.
+
+You can also use the Vercel CLI: from the repo root run `vercel env add VITE_API_URL` (and repeat for each variable), then redeploy.
 
 ### Option B: Vercel CLI
 

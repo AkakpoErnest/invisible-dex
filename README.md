@@ -1,6 +1,6 @@
 # Invisible DEX
 
-Invisible DEX is a hybrid prediction market: Sui for on-chain settlement and Yellow Network (Nitrolite) for off-chain micro-bets. This README is an overview and index only. Step-by-step instructions live in the linked docs.
+Invisible DEX is a hybrid prediction market: Sui for on-chain settlement and Yellow Network (Nitrolite) for off-chain micro-bets.
 
 ## The Problem We're Solving
 
