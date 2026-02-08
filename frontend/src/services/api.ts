@@ -19,6 +19,32 @@ export type Bet = {
   createdAt: string;
 };
 
+/* ── Polymarket types ── */
+
+export type PolymarketTag = {
+  id: string;
+  label: string;
+  slug: string;
+};
+
+export type PolymarketMarket = {
+  id: string;
+  question: string;
+  clobTokenIds: string[];
+  outcomes: string;          // JSON-encoded string: '["Yes","No"]'
+  outcomePrices: string;     // JSON-encoded string: '["0.65","0.35"]'
+};
+
+export type PolymarketEvent = {
+  id: string;
+  slug: string;
+  title: string;
+  active: boolean;
+  closed: boolean;
+  tags: PolymarketTag[];
+  markets: PolymarketMarket[];
+};
+
 export function apiBase(url?: string): string {
   if (!url) return "/api";
   return url.endsWith("/api") ? url : `${url.replace(/\/$/, "")}/api`;
@@ -60,5 +86,21 @@ export async function placeBet(
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+/* ── Polymarket API ── */
+
+// In dev the Vite proxy at /polymarket avoids CORS issues.
+// In production, set VITE_POLYMARKET_API to your own proxy URL.
+const POLYMARKET_API =
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_POLYMARKET_API) ||
+  "/polymarket";
+
+export async function fetchPolymarketEvents(limit = 5): Promise<PolymarketEvent[]> {
+  const res = await fetch(
+    `${POLYMARKET_API}/events?active=true&closed=false&limit=${limit}`
+  );
+  if (!res.ok) throw new Error(`Polymarket API error: ${res.status}`);
   return res.json();
 }
