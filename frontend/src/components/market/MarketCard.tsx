@@ -75,8 +75,22 @@ export function MarketCard({ market }: Props) {
       <div className="relative">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Market</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">
+              {market.polymarketSlug ? "Polymarket" : "Market"}
+            </p>
             <h2 className="mt-3 text-lg font-semibold text-slate-100">{market.question}</h2>
+            {market.polymarketTags && market.polymarketTags.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {market.polymarketTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-slate-300"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
           <span
             className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -233,6 +247,21 @@ export function MarketCard({ market }: Props) {
               )}
             </div>
           </div>
+        )}
+
+        {market.polymarketSlug && (
+          <a
+            href={`https://polymarket.com/event/${market.polymarketSlug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-1.5 text-xs text-cyan-300 transition hover:text-cyan-200"
+          >
+            View on Polymarket
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3">
+              <path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72Z" />
+              <path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z" />
+            </svg>
+          </a>
         )}
       </div>
     </li>

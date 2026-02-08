@@ -4,6 +4,10 @@
   "framework": "vite",
   "installCommand": "npm install",
   "rewrites": [
+    {
+      "source": "/polymarket-api/:path*",
+      "destination": "https://gamma-api.polymarket.com/:path*"
+    },
     { "source": "/favicon.ico", "destination": "/favicon.svg" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

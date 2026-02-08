@@ -8,6 +8,31 @@ export type Market = {
   eventId?: string;
   description?: string;
   createdAt?: string;
+  /** Set when the market was mapped from a Polymarket event */
+  polymarketSlug?: string;
+  polymarketTags?: string[];
+};
+
+/* ── Polymarket types ── */
+
+export type PolymarketTag = { id: string; label: string; slug: string };
+
+export type PolymarketMarket = {
+  id: string;
+  question: string;
+  clobTokenIds: string[];
+  outcomes: string;
+  outcomePrices: string;
+};
+
+export type PolymarketEvent = {
+  id: string;
+  slug: string;
+  title: string;
+  active: boolean;
+  closed: boolean;
+  tags: PolymarketTag[];
+  markets: PolymarketMarket[];
 };
 
 export type Bet = {
@@ -91,4 +116,45 @@ export async function placeBet(
     body: JSON.stringify(body),
   });
   return parseJsonOrThrow<unknown>(res);
+}
+
+/* ── Polymarket API ── */
+
+/**
+ * Polymarket requests are proxied to avoid CORS issues:
+ * - Dev: Vite proxy  /polymarket-api -> https://gamma-api.polymarket.com
+ * - Prod: Vercel rewrite /polymarket-api/* -> https://gamma-api.polymarket.com/*
+ */
+const POLYMARKET_API = "/polymarket-api";
+
+export async function fetchPolymarketEvents(limit = 5): Promise<PolymarketEvent[]> {
+  const res = await fetch(
+    `${POLYMARKET_API}/events?active=true&closed=false&limit=${limit}`
+  );
+  if (!res.ok) throw new Error(`Polymarket API error: ${res.status}`);
+  return res.json();
+}
+
+/** Convert a Polymarket event into Market objects the UI can render. */
+export function polymarketEventToMarkets(event: PolymarketEvent): Market[] {
+  return event.markets.map((m) => {
+    let prices: string[] = [];
+    try { prices = JSON.parse(m.outcomePrices); } catch { /* ignore */ }
+    const yesPrice = Number(prices[0] ?? 0);
+    const noPrice = Number(prices[1] ?? 0);
+    // Express prices as pool-like values (scale to 100 for display)
+    const poolYes = String(Math.round(yesPrice * 100));
+    const poolNo = String(Math.round(noPrice * 100));
+
+    return {
+      id: m.id,
+      question: m.question,
+      resolved: event.closed,
+      winningOutcome: null,
+      poolYes,
+      poolNo,
+      polymarketSlug: event.slug,
+      polymarketTags: event.tags.map((t) => t.label),
+    };
+  });
 }

@@ -8,6 +8,11 @@ export default defineConfig({
     proxy: {
       "/api": { target: "http://localhost:3001", changeOrigin: true },
       "/ws": { target: "ws://localhost:3001", ws: true },
+      "/polymarket-api": {
+        target: "https://gamma-api.polymarket.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/polymarket-api/, ""),
+      },
     },
   },
 });
