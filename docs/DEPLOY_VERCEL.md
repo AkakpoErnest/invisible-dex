@@ -10,12 +10,12 @@ This guide covers launching the **frontend** on Vercel. The **backend** (Node/Ex
 
 1. Go to [vercel.com](https://vercel.com) and sign in (GitHub/GitLab/Bitbucket).
 2. **Add New Project** → import your repo (`invisible-dex` or your fork).
-3. **Configure:**
-   - **Root Directory:** `frontend` (click Edit, set to `frontend`).
-   - **Framework Preset:** Vite (or leave as auto).
-   - **Build Command:** `npm run build` (default for Vite).
-   - **Output Directory:** `dist` (default for Vite).
-   - **Install Command:** `npm install` (default).
+3. **Configure** (use one of these):
+
+   - **Option 1 – Root Directory = `frontend` (recommended):**  
+     **Root Directory:** `frontend`. **Build Command:** `npm run build`. **Output Directory:** `dist`. **Install Command:** `npm install`. Framework: Vite.
+   - **Option 2 – Deploy from repo root:**  
+     Leave **Root Directory** empty. The repo’s root **vercel.json** will run `cd frontend && npm install && npm run build` and use **Output Directory** `frontend/dist`. No need to set build/output in the dashboard.
 4. **Environment variables** (add in the Vercel project → Settings → Environment Variables):
 
    | Name | Value | Notes |
@@ -63,8 +63,9 @@ Ensure the backend allows CORS from your Vercel domain (e.g. `https://your-proje
 
 ---
 
-## 3. Troubleshooting 404s
+## 3. Troubleshooting: app not showing or 404
 
+- **Build is failing:** Open the deployment → **Building** tab in Vercel. Fix the error. Use **Root Directory** = `frontend` or deploy from repo root (root **vercel.json** builds the frontend).
 - **404 on the app (blank page or “Failed to load resource” for the page):**
   - In Vercel, set **Root Directory** to **`frontend`** (Project Settings → General). If the root is wrong, the build may not produce `dist/index.html`.
   - The repo’s `frontend/vercel.json` includes an SPA fallback rewrite so any path serves `index.html`. Redeploy after pulling the latest so this is applied.
