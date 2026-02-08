@@ -10,6 +10,15 @@ export type Market = {
   createdAt?: string;
 };
 
+export type Bet = {
+  id: string;
+  marketId: string;
+  outcome: number;
+  amount: string;
+  user: string;
+  createdAt: string;
+};
+
 export function apiBase(url?: string): string {
   if (!url) return "/api";
   return url.endsWith("/api") ? url : `${url.replace(/\/$/, "")}/api`;
@@ -27,6 +36,16 @@ export async function createMarket(apiUrl: string, question: string): Promise<Ma
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
   });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function listBets(
+  apiUrl: string,
+  marketId?: string
+): Promise<{ bets: Bet[] }> {
+  const qs = marketId ? `?marketId=${encodeURIComponent(marketId)}` : "";
+  const res = await fetch(`${apiBase(apiUrl)}/bets${qs}`);
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }

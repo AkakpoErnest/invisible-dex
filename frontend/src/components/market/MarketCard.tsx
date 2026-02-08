@@ -1,16 +1,40 @@
-import { useState } from "react";
-import type { Market } from "../../services/api";
-import { placeBet } from "../../services/api";
+import { useState, useEffect, useCallback } from "react";
+import type { Market, Bet } from "../../services/api";
+import { placeBet, listBets } from "../../services/api";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 type Props = { market: Market };
+
+function shortenAddress(addr: string, head = 6, tail = 4): string {
+  if (!addr || addr.length <= head + tail) return addr;
+  return `${addr.slice(0, head)}…${addr.slice(-tail)}`;
+}
 
 export function MarketCard({ market }: Props) {
   const [outcome, setOutcome] = useState<0 | 1>(0);
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [bets, setBets] = useState<Bet[]>([]);
+  const [betsLoading, setBetsLoading] = useState(false);
   const { address } = useSuiWallet();
+
+  const loadBets = useCallback(async () => {
+    const apiUrl = import.meta.env.VITE_API_URL ?? "/api";
+    setBetsLoading(true);
+    try {
+      const { bets: list } = await listBets(apiUrl, market.id);
+      setBets(list);
+    } catch {
+      setBets([]);
+    } finally {
+      setBetsLoading(false);
+    }
+  }, [market.id]);
+
+  useEffect(() => {
+    loadBets();
+  }, [loadBets]);
 
   const yesPool = Number(market.poolYes);
   const noPool = Number(market.poolNo);
@@ -32,6 +56,7 @@ export function MarketCard({ market }: Props) {
       await placeBet(apiUrl, { marketId: market.id, outcome, amount, user: address ?? undefined });
       setMessage("Bet placed.");
       setAmount("");
+      loadBets();
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Failed to place bet");
     } finally {
@@ -95,6 +120,34 @@ export function MarketCard({ market }: Props) {
             Winning outcome: {market.winningOutcome === 0 ? "Yes" : "No"}
           </div>
         ) : null}
+
+        <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Bets on this market
+          </h3>
+          {betsLoading ? (
+            <p className="text-sm text-slate-500">Loading…</p>
+          ) : bets.length === 0 ? (
+            <p className="text-sm text-slate-500">No bets yet.</p>
+          ) : (
+            <ul className="space-y-2 max-h-32 overflow-y-auto">
+              {bets.map((bet) => (
+                <li
+                  key={bet.id}
+                  className="flex items-center justify-between gap-2 text-sm text-slate-300"
+                >
+                  <span className="truncate font-mono text-xs text-slate-400" title={bet.user}>
+                    {shortenAddress(bet.user)}
+                  </span>
+                  <span className={bet.outcome === 0 ? "text-emerald-300" : "text-rose-300"}>
+                    {bet.outcome === 0 ? "Yes" : "No"}
+                  </span>
+                  <span className="tabular-nums text-slate-200">{bet.amount}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {!market.resolved && (
           <div className="mt-6">

@@ -42,8 +42,52 @@ A true hybrid architecture:
 - **Using the app (testnet):** [USER_GUIDE.md](./USER_GUIDE.md).
 - **Deploy on Vercel:** [docs/DEPLOY_VERCEL.md](docs/DEPLOY_VERCEL.md).
 - **APIs and keys:** [docs/HOW_TO_GET_SUI_RPC.md](docs/HOW_TO_GET_SUI_RPC.md), [docs/HOW_TO_GET_SEPOLIA_RPC.md](docs/HOW_TO_GET_SEPOLIA_RPC.md), [docs/HOW_TO_GET_YELLOW_API.md](docs/HOW_TO_GET_YELLOW_API.md), [docs/HOW_TO_GET_BACKEND_API.md](docs/HOW_TO_GET_BACKEND_API.md).
+- **Deployed contracts (Sui + Yellow):** [docs/DEPLOYED_CONTRACTS.md](docs/DEPLOYED_CONTRACTS.md).
 
 All step-by-step instructions live in those docs, not in this README.
+
+### How the deployed contracts are used
+
+| Where | Sui (testnet) | Yellow Network (Sepolia) |
+|-------|----------------|---------------------------|
+| **What** | One Move package: `invisible_dex::prediction_market`. | Nitrolite **Custody** and **Adjudicator** contracts + WebSocket clearnodes. |
+| **In the app** | **Frontend:** Builds PTBs that call `prediction_market::create_and_share_market` to create markets on-chain (see [CreateMarketForm](frontend/src/components/market/CreateMarketForm.tsx)). **Server:** Reads chain for on-chain markets and listens for `MarketCreated` events (see [SuiService](server/src/services/SuiService.ts)). Resolution and claims use the same package. | **Server:** Uses Nitrolite (Custody + Adjudicator) for off-chain state channels; `/health` reports Yellow when `PRIVATE_KEY` and `ALCHEMY_RPC_URL` are set. **Demo:** [yellow-nitrolite-demo.ts](server/scripts/yellow-nitrolite-demo.ts) runs auth and off-chain transfers with the Yellow SDK. |
+| **Flow** | Create market → place bets → resolve → claim (on-chain). Optional: batch-settle many bets in one PTB. | Instant micro-bets off-chain via state channels; final state can be batch-settled on Sui. |
+| **Env** | `PREDICTION_MARKET_PACKAGE` (server), `VITE_PREDICTION_MARKET_PACKAGE` / `VITE_SUI_PACKAGE_ID` (frontend). | `PRIVATE_KEY`, `ALCHEMY_RPC_URL` (Sepolia), `YELLOW_WS_ENDPOINT`. |
+
+Full addresses and IDs: [docs/DEPLOYED_CONTRACTS.md](docs/DEPLOYED_CONTRACTS.md).
+
+### What’s working, how the app works, and how to use it
+
+**What’s working**
+
+| Feature | Status |
+|--------|--------|
+| **Wallet gate** | You must connect a **Sui wallet** (testnet) first; the app blocks create/bet until then. |
+| **Create market** | With `VITE_PREDICTION_MARKET_PACKAGE` set: creates **on-chain** via Sui PTB (`create_and_share_market`). Without it: creates via **API** (in-memory). |
+| **View markets** | Click **View markets** to load the list. Backend merges **on-chain markets** (if Sui is configured) and **API-created markets**. |
+| **Place bet** | On any open market: choose Yes/No, enter amount, click **Place bet**. Bets are sent to the backend API and stored in-memory (associated with your wallet address). |
+| **Backend** | REST: `GET/POST /api/markets`, `POST /api/bets`. Health: `GET /health` (reports Sui network and Yellow “connected” when env is set). |
+| **Sui contracts** | Deployed on testnet; one package, one module `prediction_market`. |
+| **Yellow Network** | Config is used: when `PRIVATE_KEY` and `ALCHEMY_RPC_URL` (Sepolia) are set, `/health` shows `yellow.connected: true`. The [Yellow demo script](server/scripts/yellow-nitrolite-demo.ts) runs off-chain Nitrolite flows; in-app Yellow state-channel betting is stubbed for later. |
+
+**How the app works**
+
+1. **Connect** → User connects a Sui wallet (required). Network shown in header (e.g. testnet).
+2. **Create market** → If the frontend has the Sui package ID in env, it builds a PTB and creates the market **on-chain**; otherwise it POSTs to the API and the market exists only in the backend.
+3. **View markets** → Frontend calls `GET /api/markets`. The server returns a merged list: on-chain markets (from Sui, when configured) plus markets created via `POST /api/markets`.
+4. **Place bet** → User picks outcome (Yes/No) and amount; frontend sends `POST /api/bets` with `marketId`, `outcome`, `amount`, and wallet `user`. Backend stores the bet in-memory. Pool display may not update until the backend adds pool aggregation.
+5. **Yellow** → Used for health and the standalone Nitrolite demo (auth + off-chain transfer). Full “instant bet via Yellow then settle on Sui” is the target design; current UI bet goes to the API only.
+
+**How to use it**
+
+1. **Run:** From repo root, `npm run install:all` then `npm run dev:all`. Backend at **http://localhost:3001**, frontend at **http://localhost:5173**.
+2. **Open** http://localhost:5173 and **connect** your Sui wallet (testnet). Get testnet SUI from [faucet.sui.io](https://faucet.sui.io) if you will create on-chain markets.
+3. **Create a market:** Enter a question and click **Create market**. (With package ID in env, it’s on-chain; otherwise API-only.)
+4. **View markets:** Click **View markets** to load the list. Create one first if the list is empty.
+5. **Place a bet:** On a market card, choose Yes or No, enter an amount, click **Place bet**. Success message confirms the bet was sent to the API.
+
+For more detail: [USER_GUIDE.md](./USER_GUIDE.md). For current status and next steps: [STATUS_AND_NEXT_STEPS.md](./STATUS_AND_NEXT_STEPS.md).
 
 ---
 
@@ -181,6 +225,7 @@ Winners receive payouts
 
 - **docs/API.md** - API endpoints and WebSocket events
 - **docs/DEPLOYMENT.md** - Production deployment guide
+- **docs/DEPLOYED_CONTRACTS.md** - All deployed smart contracts (Sui testnet + Yellow Network / Sepolia)
 
 ### Code Documentation
 

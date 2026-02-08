@@ -63,7 +63,17 @@ Ensure the backend allows CORS from your Vercel domain (e.g. `https://your-proje
 
 ---
 
-## 3. Post-deploy checklist
+## 3. Troubleshooting 404s
+
+- **404 on the app (blank page or “Failed to load resource” for the page):**
+  - In Vercel, set **Root Directory** to **`frontend`** (Project Settings → General). If the root is wrong, the build may not produce `dist/index.html`.
+  - The repo’s `frontend/vercel.json` includes an SPA fallback rewrite so any path serves `index.html`. Redeploy after pulling the latest so this is applied.
+- **404 on `/api/...` or “Failed to load resource” for API calls:**
+  - The frontend does **not** call your Vercel domain for the API. It calls **`VITE_API_URL`**. Set **VITE_API_URL** in Vercel to your **deployed backend URL** (e.g. `https://your-backend.railway.app`). If that env var is missing or wrong, the app will request `/api` on the same origin (Vercel), which has no API and returns 404.
+
+---
+
+## 4. Post-deploy checklist
 
 - [ ] Open your Vercel URL; the app loads.
 - [ ] Connect wallet (Sui testnet/mainnet).
@@ -72,7 +82,7 @@ Ensure the backend allows CORS from your Vercel domain (e.g. `https://your-proje
 
 ---
 
-## 4. Custom domain (optional)
+## 5. Custom domain (optional)
 
 In the Vercel project → **Settings → Domains**, add your domain and follow the DNS instructions.
 
