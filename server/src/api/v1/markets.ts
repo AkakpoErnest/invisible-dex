@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { jsonSuccess, jsonError } from "../responses.js";
+import { suiService } from "../../services/SuiService.js";
 
 export const marketsV1Router = Router();
 
@@ -56,9 +57,44 @@ marketsV1Router.get("/", (req, res) => {
   jsonSuccess(res, { markets: page, total, limit, offset });
 });
 
-/** GET /api/v1/markets/:marketId */
-marketsV1Router.get("/:marketId", (req, res) => {
-  const m = markets.find((x) => x.id === req.params.marketId);
+/** GET /api/v1/markets/:marketId – try Sui chain first when id is 0x and package configured */
+marketsV1Router.get("/:marketId", async (req, res) => {
+  const marketId = req.params.marketId;
+  if (marketId.startsWith("0x") && suiService.isConfigured()) {
+    try {
+      const chainObj = await suiService.getMarket(marketId);
+      if (chainObj?.data && "content" in chainObj.data && chainObj.data.content?.dataType === "moveObject") {
+        const fields = (chainObj.data.content as { fields: Record<string, unknown> }).fields as Record<string, unknown>;
+        const question = typeof fields.question === "string" ? fields.question : String(fields.question ?? "");
+        const resolved = Boolean(fields.resolved);
+        const winningOutcome = typeof fields.winning_outcome === "number" ? fields.winning_outcome : null;
+        const poolYes = String(fields.pool_yes ?? "0");
+        const poolNo = String(fields.pool_no ?? "0");
+        return jsonSuccess(res, {
+          market: {
+            id: marketId,
+            eventId: marketId,
+            description: question,
+            outcomes: [
+              { name: "Yes", totalBacking: poolYes, odds: "1.85", winning: winningOutcome === 0 },
+              { name: "No", totalBacking: poolNo, odds: "2.10", winning: winningOutcome === 1 },
+            ],
+            totalVolume: String(Number(poolYes) + Number(poolNo)),
+            status: resolved ? "settled" : "active",
+            oracle: String(fields.creator ?? "0x0"),
+            createdAt: null,
+            settleTime: null,
+            channelId: "0x0",
+            recentBets: [],
+            stats: { totalBettors: 0, avgBetSize: "0", largestBet: "0", lastBetTime: null },
+          },
+        });
+      }
+    } catch (_e) {
+      // Fall through to in-memory
+    }
+  }
+  const m = markets.find((x) => x.id === marketId);
   if (!m) return jsonError(res, "NOT_FOUND", "Market not found", 404);
   jsonSuccess(res, {
     market: {
