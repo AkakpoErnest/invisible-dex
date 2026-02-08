@@ -119,7 +119,7 @@ function App() {
             <img
               src="/logo.png"
               alt="Invisible DEX"
-              className="h-12 w-12 rounded-2xl object-contain shadow-[0_12px_30px_rgba(11,24,32,0.35)]"
+              className="h-16 w-16 rounded-2xl object-contain shadow-[0_12px_30px_rgba(11,24,32,0.35)]"
             />
             <div>
               <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Invisible</p>
