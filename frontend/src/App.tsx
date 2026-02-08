@@ -51,7 +51,10 @@ function App() {
               ID
             </div>
             <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Invisible DEX</p>
-            <h1 className="mt-3 font-display text-2xl text-slate-100">Connect your Sui wallet</h1>
+            <p className="mt-2 text-sm text-slate-400">
+              High-frequency prediction betting: instant off-chain via Yellow, settled on Sui.
+            </p>
+            <h1 className="mt-4 font-display text-2xl text-slate-100">Connect your Sui wallet</h1>
             <p className="mt-3 text-sm text-slate-400">
               To create markets and place bets you need:
             </p>
@@ -97,7 +100,7 @@ function App() {
               <span className="text-gradient">liquid, invisible edge</span>.
             </h2>
             <p className="max-w-xl text-base text-slate-300">
-              Create new prediction markets. No need to load existing ones — just add your question and go.
+              Built to make high-frequency prediction betting possible: instant off-chain micro-bets via Yellow Network and atomic on-chain settlement on Sui, so you get speed and finality without the complexity.
             </p>
             <div className="flex flex-wrap gap-3 text-xs text-slate-300">
               <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
