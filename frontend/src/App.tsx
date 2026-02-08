@@ -116,9 +116,11 @@ function App() {
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-6 pb-16 pt-8 lg:px-10">
         <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between reveal-up">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-300 via-cyan-300 to-amber-300 text-lg font-semibold text-slate-900 shadow-[0_12px_30px_rgba(11,24,32,0.35)]">
-              ID
-            </div>
+            <img
+              src="/logo.png"
+              alt="Invisible DEX"
+              className="h-12 w-12 rounded-2xl object-contain shadow-[0_12px_30px_rgba(11,24,32,0.35)]"
+            />
             <div>
               <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Invisible</p>
               <h1 className="font-display text-2xl text-slate-100">Invisible DEX</h1>
@@ -273,7 +275,9 @@ function App() {
             disabled={introBreaking}
             aria-label="Enter Invisible DEX"
           >
-            <div className="intro-badge">ID</div>
+            <div className="intro-badge">
+              <img src="/logo.png" alt="" className="h-full w-full object-contain" />
+            </div>
             <p className="intro-kicker">Invisible DEX</p>
             <h2 className="intro-title">Welcome</h2>
             <p className="intro-subtitle">
