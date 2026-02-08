@@ -120,7 +120,12 @@ export async function placeBet(
 
 /* ── Polymarket API ── */
 
-const POLYMARKET_API = "https://gamma-api.polymarket.com";
+/**
+ * Polymarket requests are proxied to avoid CORS issues:
+ * - Dev: Vite proxy  /polymarket-api -> https://gamma-api.polymarket.com
+ * - Prod: Vercel rewrite /polymarket-api/* -> https://gamma-api.polymarket.com/*
+ */
+const POLYMARKET_API = "/polymarket-api";
 
 export async function fetchPolymarketEvents(limit = 5): Promise<PolymarketEvent[]> {
   const res = await fetch(
