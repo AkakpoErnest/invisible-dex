@@ -1,19 +1,11 @@
 import { Router } from "express";
+import { betsStore } from "./store.js";
 
 export const betsRouter = Router();
 
-const bets: Array<{
-  id: string;
-  marketId: string;
-  outcome: number;
-  amount: string;
-  user: string;
-  createdAt: string;
-}> = [];
-
 betsRouter.get("/", (req, res) => {
   const marketId = req.query.marketId as string | undefined;
-  const list = marketId ? bets.filter((b) => b.marketId === marketId) : bets;
+  const list = marketId ? betsStore.filter((b) => b.marketId === marketId) : betsStore;
   res.json({ bets: list });
 });
 
@@ -31,6 +23,6 @@ betsRouter.post("/", (req, res) => {
     user: user ?? "anonymous",
     createdAt: new Date().toISOString(),
   };
-  bets.push(bet);
+  betsStore.push(bet);
   res.status(201).json(bet);
 });

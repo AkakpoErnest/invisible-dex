@@ -14,13 +14,18 @@ export type Market = {
 
 const defaultBase = typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
   ? import.meta.env.VITE_API_URL
-  : "/api";
+  : "";
+
+function apiBase(base: string): string {
+  if (!base) return "/api";
+  return base.endsWith("/api") ? base : `${base.replace(/\/$/, "")}/api`;
+}
 
 export class ApiClient {
   constructor(private baseUrl: string = defaultBase) {}
 
   async getMarkets(): Promise<{ markets: Market[] }> {
-    const res = await fetch(`${this.baseUrl}/markets`);
+    const res = await fetch(`${apiBase(this.baseUrl)}/markets`);
     if (!res.ok) throw new Error(await res.text());
     return res.json();
   }
@@ -31,7 +36,7 @@ export class ApiClient {
     amount: string;
     user?: string;
   }): Promise<unknown> {
-    const res = await fetch(`${this.baseUrl}/bets`, {
+    const res = await fetch(`${apiBase(this.baseUrl)}/bets`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

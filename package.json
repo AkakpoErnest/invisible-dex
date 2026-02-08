@@ -9,6 +9,7 @@
     "build:contracts": "cd contracts && sui move build",
     "test:integration": "node scripts/run-integration-test.js",
     "test:yellow": "node scripts/test-yellow.js",
+    "demo:yellow": "cd server && npx tsx scripts/yellow-nitrolite-demo.ts",
     "dev:server": "cd server && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:all": "npx concurrently --names \"server,frontend\" -c \"cyan,magenta\" \"npm run dev:server\" \"npm run dev:frontend\""

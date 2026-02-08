@@ -1,6 +1,7 @@
 import { WebSocketServer } from "ws";
 import type { Server } from "http";
 import type { Logger } from "pino";
+import { isNitroliteConfigured } from "../services/NitroliteIntegration.js";
 
 export function setupWebSocket(httpServer: Server, logger: Logger): void {
   const wss = new WebSocketServer({ server: httpServer, path: "/ws" });
@@ -54,6 +55,7 @@ export function setupWebSocket(httpServer: Server, logger: Logger): void {
               amount: amount ?? "0",
               odds: "1.85",
               timestamp: new Date().toISOString(),
+              ...(isNitroliteConfigured() && { viaLayer: "yellow" }),
             })
           );
           return;

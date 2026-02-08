@@ -1,42 +1,16 @@
 import { Router } from "express";
 import { jsonSuccess, jsonError } from "../responses.js";
 import { suiService } from "../../services/SuiService.js";
+import { marketsStore } from "../store.js";
 
 export const marketsV1Router = Router();
-
-/** Shared in-memory store (same data as legacy /api/markets for dev) */
-const markets: Array<{
-  id: string;
-  eventId?: string;
-  question: string;
-  description?: string;
-  resolved: boolean;
-  winningOutcome: number | null;
-  poolYes: string;
-  poolNo: string;
-  createdAt?: string;
-  channelId?: string;
-}> = [
-  {
-    id: "test-market-1",
-    eventId: "test-match-1",
-    question: "Will Team A win the match?",
-    description: "Will Team A win the match?",
-    resolved: false,
-    winningOutcome: null,
-    poolYes: "0",
-    poolNo: "0",
-    createdAt: new Date().toISOString(),
-    channelId: "0x0",
-  },
-];
 
 /** GET /api/v1/markets – list with status, limit, offset, sort, order */
 marketsV1Router.get("/", (req, res) => {
   const status = req.query.status as string | undefined;
   const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
   const offset = Math.max(0, Number(req.query.offset) || 0);
-  let list = [...markets];
+  let list = [...marketsStore];
   if (status === "active") list = list.filter((m) => !m.resolved);
   if (status === "settled") list = list.filter((m) => m.resolved);
   const total = list.length;
@@ -94,7 +68,7 @@ marketsV1Router.get("/:marketId", async (req, res) => {
       // Fall through to in-memory
     }
   }
-  const m = markets.find((x) => x.id === marketId);
+  const m = marketsStore.find((x) => x.id === marketId);
   if (!m) return jsonError(res, "NOT_FOUND", "Market not found", 404);
   jsonSuccess(res, {
     market: {
@@ -110,7 +84,7 @@ marketsV1Router.get("/:marketId", async (req, res) => {
       oracle: "0x0",
       createdAt: m.createdAt,
       settleTime: null,
-      channelId: m.channelId,
+      channelId: m.channelId ?? "0x0",
       recentBets: [],
       stats: { totalBettors: 0, avgBetSize: "0", largestBet: "0", lastBetTime: null },
     },
@@ -119,7 +93,7 @@ marketsV1Router.get("/:marketId", async (req, res) => {
 
 /** GET /api/v1/markets/:marketId/settlement */
 marketsV1Router.get("/:marketId/settlement", (req, res) => {
-  const m = markets.find((x) => x.id === req.params.marketId);
+  const m = marketsStore.find((x) => x.id === req.params.marketId);
   if (!m) return jsonError(res, "NOT_FOUND", "Market not found", 404);
   jsonSuccess(res, {
     marketId: m.id,
@@ -148,10 +122,10 @@ marketsV1Router.post("/", (req, res) => {
     createdAt: new Date().toISOString(),
     channelId: "0x0",
   };
-  markets.push(market);
+  marketsStore.push(market);
   jsonSuccess(
     res,
-    { marketId: id, transactionDigest: null, channelId: "0x0" },
+    { marketId: id, transactionDigest: null, channelId: market.channelId ?? "0x0" },
     201
   );
 });
