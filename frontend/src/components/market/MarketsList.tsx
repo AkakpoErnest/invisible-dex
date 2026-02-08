@@ -3,12 +3,15 @@ import { MarketCard } from "./MarketCard";
 
 type Props = {
   markets: Market[];
+  polymarkets?: Market[];
   loading: boolean;
   error: string | null;
 };
 
-export function MarketsList({ markets, loading, error }: Props) {
-  if (loading) {
+export function MarketsList({ markets, polymarkets = [], loading, error }: Props) {
+  const hasContent = markets.length > 0 || polymarkets.length > 0;
+
+  if (loading && !hasContent) {
     return (
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, idx) => (
@@ -26,7 +29,7 @@ export function MarketsList({ markets, loading, error }: Props) {
     );
   }
 
-  if (error) {
+  if (error && !hasContent) {
     const isBackendNotConnected = error.includes("Backend not connected") || error.includes("VITE_API_URL");
     return (
       <div className="glass-panel rounded-3xl border border-white/10 p-6 text-slate-200">
@@ -42,11 +45,11 @@ export function MarketsList({ markets, loading, error }: Props) {
     );
   }
 
-  if (markets.length === 0) {
+  if (!hasContent) {
     return (
       <div className="glass-panel rounded-3xl border border-white/10 p-6 text-slate-200">
         <p className="text-sm uppercase tracking-[0.3em] text-emerald-200/70">No markets loaded</p>
-        <p className="mt-3 text-lg font-semibold">Click &quot;View markets&quot; above to load existing ones.</p>
+        <p className="mt-3 text-lg font-semibold">Markets are loading from Polymarket…</p>
         <p className="mt-2 text-sm text-slate-400">
           Or create a new prediction market in the section above.
         </p>
@@ -55,10 +58,32 @@ export function MarketsList({ markets, loading, error }: Props) {
   }
 
   return (
-    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {markets.map((m) => (
-        <MarketCard key={m.id} market={m} />
-      ))}
-    </ul>
+    <div className="space-y-8">
+      {polymarkets.length > 0 && (
+        <div>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200/70">
+            Polymarket — Live Events
+          </h3>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {polymarkets.map((m) => (
+              <MarketCard key={`pm-${m.id}`} market={m} />
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {markets.length > 0 && (
+        <div>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-200/70">
+            Your Markets
+          </h3>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {markets.map((m) => (
+              <MarketCard key={m.id} market={m} />
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }

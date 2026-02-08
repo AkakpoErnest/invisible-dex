@@ -9,7 +9,7 @@ import { listEvents, type Event } from "./services/api";
 
 function App() {
   useSuiWallet();
-  const { markets, loading, error, refresh, apiUrl } = useMarkets();
+  const { markets, polymarkets, loading, polyLoading, error, refresh, refreshPolymarket, apiUrl } = useMarkets();
   const network = import.meta.env.VITE_SUI_NETWORK ?? "testnet";
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
@@ -236,22 +236,32 @@ function App() {
         <section id="markets" className="mt-14">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <h2 className="font-display text-2xl text-slate-100">Existing markets</h2>
+              <h2 className="font-display text-2xl text-slate-100">Prediction Markets</h2>
               <p className="text-sm text-slate-400">
-                Optional: load and view markets to bet on.
+                Live events from Polymarket and your own markets.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => void refresh()}
-              disabled={loading}
-              className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-300/40 hover:bg-white/10 disabled:opacity-50"
-            >
-              {loading ? "Loading…" : "View markets"}
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => void refreshPolymarket()}
+                disabled={polyLoading}
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-300/40 hover:bg-white/10 disabled:opacity-50"
+              >
+                {polyLoading ? "Loading…" : "Refresh Polymarket"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void refresh()}
+                disabled={loading}
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-300/40 hover:bg-white/10 disabled:opacity-50"
+              >
+                {loading ? "Loading…" : "View my markets"}
+              </button>
+            </div>
           </div>
           <div className="mt-6">
-            <MarketsList markets={markets} loading={loading} error={error} />
+            <MarketsList markets={markets} polymarkets={polymarkets} loading={loading || polyLoading} error={error} />
           </div>
         </section>
 
