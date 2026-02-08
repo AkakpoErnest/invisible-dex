@@ -131,6 +131,59 @@ body {
     animation: orbDrift 26s ease-in-out infinite;
   }
 
+  .ring-field {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+  }
+
+  .ring {
+    position: absolute;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 198, 214, 0.18);
+    box-shadow: 0 0 40px rgba(52, 211, 184, 0.12);
+    animation: ringPulse 14s ease-in-out infinite;
+  }
+
+  .ring::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 120deg,
+      rgba(52, 211, 184, 0.35),
+      rgba(242, 191, 108, 0.2),
+      rgba(52, 211, 184, 0.35)
+    );
+    mask: radial-gradient(circle at center, transparent 62%, black 64%);
+    opacity: 0.5;
+    filter: blur(0.2px);
+  }
+
+  .ring-1 {
+    width: 520px;
+    height: 520px;
+    top: 8%;
+    left: 10%;
+  }
+
+  .ring-2 {
+    width: 760px;
+    height: 760px;
+    top: 30%;
+    right: -10%;
+    animation-delay: -6s;
+  }
+
+  .ring-3 {
+    width: 420px;
+    height: 420px;
+    bottom: -4%;
+    left: 35%;
+    animation-delay: -10s;
+  }
+
   .card-3d {
     transform-style: preserve-3d;
     will-change: transform;
@@ -179,5 +232,20 @@ body {
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.96) rotate(0deg);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) scale(1.02) rotate(12deg);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.96) rotate(24deg);
+    opacity: 0.25;
   }
 }

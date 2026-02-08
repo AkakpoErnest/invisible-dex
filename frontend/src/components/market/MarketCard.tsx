@@ -59,20 +59,34 @@ export function MarketCard({ market }: Props) {
           </span>
         </div>
 
-        <div className="mt-5 space-y-2 text-xs text-slate-400">
+        <div className="mt-5 space-y-3 text-xs text-slate-400">
           <div className="flex items-center justify-between">
-            <span>Yes pool: {market.poolYes}</span>
-            <span>No pool: {market.poolNo}</span>
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.24em] text-emerald-200">
+                Yes
+              </span>
+              <span>{market.poolYes}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-rose-400/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.24em] text-rose-200">
+                No
+              </span>
+              <span>{market.poolNo}</span>
+            </div>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-emerald-300 via-cyan-300 to-emerald-200"
+              className="h-full rounded-full bg-gradient-to-r from-emerald-300 via-emerald-200 to-transparent"
               style={{ width: `${yesPct}%` }}
             />
+            <div
+              className="h-full rounded-full bg-gradient-to-l from-rose-300 via-rose-200 to-transparent"
+              style={{ width: `${noPct}%`, marginTop: "-8px" }}
+            />
           </div>
-          <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.25em] text-slate-500">
-            <span>{totalPool > 0 ? `${yesPct}% Yes` : "No liquidity yet"}</span>
-            <span>{totalPool > 0 ? `${noPct}% No` : ""}</span>
+          <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.22em] text-slate-500">
+            <span>{totalPool > 0 ? `${yesPct}%` : "No liquidity yet"}</span>
+            <span>{totalPool > 0 ? `${noPct}%` : ""}</span>
           </div>
         </div>
 
@@ -84,30 +98,30 @@ export function MarketCard({ market }: Props) {
 
         {!market.resolved && (
           <div className="mt-5 space-y-4">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setOutcome(0)}
-                className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  outcome === 0
-                    ? "bg-emerald-400/20 text-emerald-200 ring-1 ring-emerald-300/40"
-                    : "bg-white/5 text-slate-300 hover:bg-white/10"
-                }`}
-              >
-                Yes
-              </button>
-              <button
-                type="button"
-                onClick={() => setOutcome(1)}
-                className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  outcome === 1
-                    ? "bg-rose-400/20 text-rose-200 ring-1 ring-rose-300/40"
-                    : "bg-white/5 text-slate-300 hover:bg-white/10"
-                }`}
-              >
-                No
-              </button>
-            </div>
+          <div className="flex rounded-full border border-white/10 bg-white/5 p-1">
+            <button
+              type="button"
+              onClick={() => setOutcome(0)}
+              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                outcome === 0
+                  ? "bg-gradient-to-r from-emerald-300 via-cyan-300 to-emerald-200 text-slate-900 shadow-[0_12px_20px_rgba(16,37,34,0.35)]"
+                  : "text-slate-300 hover:text-slate-100"
+              }`}
+            >
+              Yes
+            </button>
+            <button
+              type="button"
+              onClick={() => setOutcome(1)}
+              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                outcome === 1
+                  ? "bg-gradient-to-r from-rose-300 via-amber-200 to-rose-200 text-slate-900 shadow-[0_12px_20px_rgba(37,16,24,0.35)]"
+                  : "text-slate-300 hover:text-slate-100"
+              }`}
+            >
+              No
+            </button>
+          </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <input
                 type="number"

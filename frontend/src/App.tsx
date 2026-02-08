@@ -1,4 +1,5 @@
 import { MarketsList } from "./components/market/MarketsList";
+import { CreateMarketForm } from "./components/market/CreateMarketForm";
 import { WalletConnect } from "./components/wallet/WalletConnect";
 import { BalanceDisplay } from "./components/wallet/BalanceDisplay";
 import { useMarkets } from "./hooks/useMarkets";
@@ -17,6 +18,11 @@ function App() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
+      <div aria-hidden className="ring-field">
+        <span className="ring ring-1" />
+        <span className="ring ring-2" />
+        <span className="ring ring-3" />
+      </div>
       <div
         aria-hidden
         className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl orb-drift"
@@ -134,7 +140,7 @@ function App() {
             <div>
               <h2 className="font-display text-3xl text-slate-100">Live Markets</h2>
               <p className="text-sm text-slate-400">
-                Connected directly to your backend and chain state.
+                Create your own prediction market or bet on existing ones.
               </p>
             </div>
             <button
@@ -145,7 +151,11 @@ function App() {
               Refresh list
             </button>
           </div>
-          <div className="mt-6">
+          <div className="mt-6 space-y-6">
+            <CreateMarketForm
+              apiUrl={apiUrl}
+              onCreated={() => void refresh()}
+            />
             <MarketsList markets={markets} loading={loading} error={error} />
           </div>
         </section>
@@ -153,7 +163,7 @@ function App() {
         <footer className="mt-16 border-t border-white/10 pt-6 text-xs text-slate-500">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span>Invisible DEX • {network} • {apiUrl}</span>
-            <span>Create markets via the API to populate this dashboard.</span>
+            <span>Create prediction markets above to get started.</span>
           </div>
         </footer>
       </div>

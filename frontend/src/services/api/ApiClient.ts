@@ -30,6 +30,16 @@ export class ApiClient {
     return res.json();
   }
 
+  async createMarket(question: string): Promise<Market> {
+    const res = await fetch(`${apiBase(this.baseUrl)}/markets`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
   async placeBet(body: {
     marketId: string;
     outcome: number;

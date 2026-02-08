@@ -21,6 +21,16 @@ export async function listMarkets(apiUrl: string): Promise<{ markets: Market[] }
   return res.json();
 }
 
+export async function createMarket(apiUrl: string, question: string): Promise<Market> {
+  const res = await fetch(`${apiBase(apiUrl)}/markets`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 export async function placeBet(
   apiUrl: string,
   body: { marketId: string; outcome: number; amount: string; user?: string }
