@@ -123,14 +123,16 @@ export async function placeBet(
 /**
  * Polymarket requests are proxied to avoid CORS issues:
  * - Dev: Vite proxy  /polymarket-api -> https://gamma-api.polymarket.com
- * - Prod: Vercel rewrite /polymarket-api/* -> https://gamma-api.polymarket.com/*
+ * - Prod: Vercel serverless function /api/polymarket
  */
-const POLYMARKET_API = "/polymarket-api";
+const POLYMARKET_API = import.meta.env.PROD ? "/api/polymarket" : "/polymarket-api";
 
 export async function fetchPolymarketEvents(limit = 5): Promise<PolymarketEvent[]> {
-  const res = await fetch(
-    `${POLYMARKET_API}/events?active=true&closed=false&limit=${limit}`
-  );
+  const url = import.meta.env.PROD
+    ? `${POLYMARKET_API}?endpoint=events&active=true&closed=false&limit=${limit}`
+    : `${POLYMARKET_API}/events?active=true&closed=false&limit=${limit}`;
+    
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`Polymarket API error: ${res.status}`);
   return res.json();
 }
