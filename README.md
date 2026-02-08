@@ -8,9 +8,9 @@ This repo is a **build guide and codebase** for **The Invisible DEX** — a hybr
 
 ---
 
-## 📋 What You're Building
+## 📋 What This Is
 
-### The Problem You're Solving
+### The Problem We're Solving
 
 Current prediction markets can't handle high-frequency betting (like every play in a football game) because:
 
@@ -18,7 +18,7 @@ Current prediction markets can't handle high-frequency betting (like every play 
 - **Off-chain is centralized** and requires trust
 - **Hybrid solutions** are complex and expensive
 
-### Your Solution
+### Our Solution
 
 A true hybrid architecture:
 

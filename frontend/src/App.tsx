@@ -3,14 +3,16 @@ import { CreateMarketForm } from "./components/market/CreateMarketForm";
 import { WalletConnect } from "./components/wallet/WalletConnect";
 import { BalanceDisplay } from "./components/wallet/BalanceDisplay";
 import { useMarkets } from "./hooks/useMarkets";
+import { useSuiWallet } from "./hooks/useSuiWallet";
 
 function App() {
+  const { isConnected } = useSuiWallet();
   const { markets, loading, error, refresh, apiUrl } = useMarkets();
   const network = import.meta.env.VITE_SUI_NETWORK ?? "testnet";
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Full-screen cinematic background video */}
+      {/* Full-screen background video */}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 z-0"
@@ -20,11 +22,11 @@ function App() {
           muted
           loop
           playsInline
-          className="h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
           src="/background.mp4"
         />
         <div
-          className="absolute inset-0 bg-[var(--bg-0)]/75"
+          className="absolute inset-0 bg-[var(--bg-0)]/70"
           aria-hidden
         />
       </div>
@@ -41,6 +43,32 @@ function App() {
         aria-hidden
         className="pointer-events-none absolute -right-24 top-10 z-[1] h-64 w-64 rounded-full bg-amber-300/10 blur-3xl orb-drift-slow"
       />
+
+      {!isConnected ? (
+        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-12">
+          <div className="glass-panel w-full max-w-md rounded-3xl border border-white/10 p-8 text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-300 via-cyan-300 to-amber-300 text-2xl font-semibold text-slate-900">
+              ID
+            </div>
+            <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Invisible DEX</p>
+            <h1 className="mt-3 font-display text-2xl text-slate-100">Connect your Sui wallet</h1>
+            <p className="mt-3 text-sm text-slate-400">
+              To create markets and place bets you need:
+            </p>
+            <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-300">
+              <li>A <strong>Sui wallet</strong> (e.g. Sui Wallet, Ethos)</li>
+              <li>Wallet connected to <strong>{network}</strong></li>
+              <li><strong>SUI</strong> for gas (use <a href="https://faucet.sui.io" target="_blank" rel="noopener noreferrer" className="text-emerald-300 underline hover:text-emerald-200">faucet.sui.io</a> for testnet SUI)</li>
+            </ul>
+            <p className="mt-3 text-xs text-slate-500">
+              Sui is required. Yellow off-chain execution is optional.
+            </p>
+            <div className="mt-8">
+              <WalletConnect />
+            </div>
+          </div>
+        </div>
+      ) : (
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-6 pb-16 pt-8 lg:px-10">
         <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between reveal-up">
           <div className="flex items-center gap-4">
@@ -150,6 +178,7 @@ function App() {
           </div>
         </footer>
       </div>
+      )}
     </div>
   );
 }

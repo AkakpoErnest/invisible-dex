@@ -97,55 +97,75 @@ export function MarketCard({ market }: Props) {
         ) : null}
 
         {!market.resolved && (
-          <div className="mt-5 space-y-4">
-          <div className="flex rounded-full border border-white/10 bg-white/5 p-1">
-            <button
-              type="button"
-              onClick={() => setOutcome(0)}
-              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                outcome === 0
-                  ? "bg-gradient-to-r from-emerald-300 via-cyan-300 to-emerald-200 text-slate-900 shadow-[0_12px_20px_rgba(16,37,34,0.35)]"
-                  : "text-slate-300 hover:text-slate-100"
-              }`}
-            >
-              Yes
-            </button>
-            <button
-              type="button"
-              onClick={() => setOutcome(1)}
-              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                outcome === 1
-                  ? "bg-gradient-to-r from-rose-300 via-amber-200 to-rose-200 text-slate-900 shadow-[0_12px_20px_rgba(37,16,24,0.35)]"
-                  : "text-slate-300 hover:text-slate-100"
-              }`}
-            >
-              No
-            </button>
-          </div>
-            <div className="flex items-center gap-2">
-              <label className="sr-only" htmlFor={`amount-${market.id}`}>
-                Bet amount
-              </label>
-              <input
-                id={`amount-${market.id}`}
-                type="number"
-                min="0"
-                step="any"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0"
-                className="h-10 w-24 shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center text-sm tabular-nums text-slate-100 placeholder:text-slate-500 focus:border-emerald-300/50 focus:outline-none focus:ring-2 focus:ring-emerald-300/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              />
-              <button
-                type="button"
-                onClick={handleBet}
-                disabled={submitting || !isAmountValid}
-                className="h-10 flex-1 min-w-0 rounded-xl bg-emerald-400/90 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-emerald-300 disabled:opacity-50 disabled:pointer-events-none"
-              >
-                {submitting ? "Placing…" : "Place bet"}
-              </button>
+          <div className="mt-6">
+            <div className="rounded-2xl border border-white/20 bg-slate-900/70 px-5 py-5 shadow-lg backdrop-blur-md">
+              <h3 className="mb-1 text-sm font-semibold uppercase tracking-wider text-slate-200">
+                Place bet
+              </h3>
+              <p className="mb-4 text-xs text-slate-500">
+                You need a connected Sui wallet and SUI for gas to place bets.
+              </p>
+              <div className="space-y-4">
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-slate-400">Outcome</p>
+                  <div className="flex w-full max-w-[200px] rounded-full border border-white/15 bg-white/5 p-1">
+                    <button
+                      type="button"
+                      onClick={() => setOutcome(0)}
+                      className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                        outcome === 0
+                          ? "bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-900 shadow-md"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOutcome(1)}
+                      className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                        outcome === 1
+                          ? "bg-gradient-to-r from-rose-400 to-amber-400 text-slate-900 shadow-md"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor={`amount-${market.id}`} className="mb-1.5 block text-xs font-medium text-slate-400">
+                    Amount
+                  </label>
+                  <div className="flex h-11 flex-nowrap items-center gap-3">
+                    <input
+                      id={`amount-${market.id}`}
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="0"
+                      className="h-11 min-h-0 w-24 shrink-0 rounded-xl border-2 border-white/15 bg-white/10 px-3 text-center text-base font-medium tabular-nums text-slate-100 placeholder:text-slate-500 focus:border-emerald-400/60 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-emerald-400/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      style={{ fontSize: "16px" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleBet}
+                      disabled={submitting || !isAmountValid}
+                      className="h-11 shrink-0 rounded-xl bg-emerald-500 px-5 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-400 disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      {submitting ? "Placing…" : "Place bet"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {message && (
+                <p className={`mt-4 text-sm ${message.startsWith("Bet placed") ? "text-emerald-300" : "text-amber-300"}`}>
+                  {message}
+                </p>
+              )}
             </div>
-            {message && <p className="text-sm text-slate-400">{message}</p>}
           </div>
         )}
       </div>

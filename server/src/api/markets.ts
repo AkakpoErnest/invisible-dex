@@ -1,10 +1,31 @@
 import { Router } from "express";
 import { marketsStore } from "./store.js";
+import { suiService } from "../services/SuiService.js";
 
 export const marketsRouter = Router();
 
-marketsRouter.get("/", (_req, res) => {
-  res.json({ markets: marketsStore });
+marketsRouter.get("/", async (_req, res) => {
+  try {
+    const chainMarkets = suiService.isConfigured()
+      ? await suiService.listMarketsFromChain(20)
+      : [];
+    const merged = new Map<string, typeof marketsStore[number]>();
+
+    chainMarkets.forEach((m) => merged.set(m.id, m));
+    marketsStore.forEach((m) => {
+      if (!merged.has(m.id)) merged.set(m.id, m);
+    });
+
+    const list = Array.from(merged.values()).sort((a, b) => {
+      const aTime = a.createdAt ? Date.parse(a.createdAt) : 0;
+      const bTime = b.createdAt ? Date.parse(b.createdAt) : 0;
+      return bTime - aTime;
+    });
+
+    res.json({ markets: list });
+  } catch {
+    res.json({ markets: marketsStore });
+  }
 });
 
 marketsRouter.get("/:id", (req, res) => {
