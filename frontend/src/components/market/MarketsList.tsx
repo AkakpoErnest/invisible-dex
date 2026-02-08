@@ -39,10 +39,10 @@ export function MarketsList({ markets, loading, error }: Props) {
   if (markets.length === 0) {
     return (
       <div className="glass-panel rounded-3xl border border-white/10 p-6 text-slate-200">
-        <p className="text-sm uppercase tracking-[0.3em] text-emerald-200/70">No markets</p>
-        <p className="mt-3 text-lg font-semibold">There are no markets yet.</p>
+        <p className="text-sm uppercase tracking-[0.3em] text-emerald-200/70">No markets loaded</p>
+        <p className="mt-3 text-lg font-semibold">Click &quot;View markets&quot; above to load existing ones.</p>
         <p className="mt-2 text-sm text-slate-400">
-          Create a market via the API or deploy on-chain markets to populate this list.
+          Or create a new prediction market in the section above.
         </p>
       </div>
     );

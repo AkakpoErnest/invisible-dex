@@ -60,7 +60,7 @@ npm run build
 
 **Options:**
 
-- **Vercel:** Connect repo, root directory `frontend`, build command `npm run build`, output `dist`
+- **Vercel:** See [DEPLOY_VERCEL.md](DEPLOY_VERCEL.md) for full steps. Root directory `frontend`, build `npm run build`, output `dist`.
 - **Netlify:** Same; publish directory `frontend/dist`
 
 ## 5. Post-deploy

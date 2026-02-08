@@ -5,33 +5,43 @@ import { BalanceDisplay } from "./components/wallet/BalanceDisplay";
 import { useMarkets } from "./hooks/useMarkets";
 
 function App() {
-  const { markets, loading, error, refresh, lastUpdated, apiUrl } = useMarkets();
-  const totalMarkets = markets.length;
-  const openMarkets = markets.filter((m) => !m.resolved).length;
-  const resolvedMarkets = totalMarkets - openMarkets;
+  const { markets, loading, error, refresh, apiUrl } = useMarkets();
   const network = import.meta.env.VITE_SUI_NETWORK ?? "testnet";
-  const lastUpdatedLabel = lastUpdated
-    ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(
-        lastUpdated
-      )
-    : "—";
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div aria-hidden className="ring-field">
+      {/* Full-screen cinematic background video */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-0"
+      >
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover"
+          src="/background.mp4"
+        />
+        <div
+          className="absolute inset-0 bg-[var(--bg-0)]/75"
+          aria-hidden
+        />
+      </div>
+      <div aria-hidden className="pointer-events-none z-[1] ring-field">
         <span className="ring ring-1" />
         <span className="ring ring-2" />
         <span className="ring ring-3" />
       </div>
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl orb-drift"
+        className="pointer-events-none absolute -left-24 top-24 z-[1] h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl orb-drift"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-amber-300/10 blur-3xl orb-drift-slow"
+        className="pointer-events-none absolute -right-24 top-10 z-[1] h-64 w-64 rounded-full bg-amber-300/10 blur-3xl orb-drift-slow"
       />
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col px-6 pb-16 pt-8 lg:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-6 pb-16 pt-8 lg:px-10">
         <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between reveal-up">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-300 via-cyan-300 to-amber-300 text-lg font-semibold text-slate-900 shadow-[0_12px_30px_rgba(11,24,32,0.35)]">
@@ -59,103 +69,76 @@ function App() {
               <span className="text-gradient">liquid, invisible edge</span>.
             </h2>
             <p className="max-w-xl text-base text-slate-300">
-              Markets, pools, and bets in this interface come directly from your API and on-chain
-              state. No mock data is rendered.
+              Create new prediction markets. No need to load existing ones — just add your question and go.
             </p>
             <div className="flex flex-wrap gap-3 text-xs text-slate-300">
               <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
                 API: {apiUrl}
               </div>
               <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                Last updated: {lastUpdatedLabel}
+                Network: {network}
               </div>
             </div>
-            <div className="flex flex-wrap gap-3 reveal-up reveal-up-delay-2">
-              <a
-                href="#markets"
-                className="glow-pill rounded-full bg-gradient-to-r from-emerald-300 via-cyan-300 to-amber-300 px-5 py-2 text-sm font-semibold text-slate-900 shadow-[0_18px_30px_rgba(11,24,32,0.4)] transition hover:brightness-110"
-              >
-                Explore live markets
-              </a>
-              <button
-                type="button"
-                onClick={() => void refresh()}
-                className="rounded-full border border-white/15 bg-white/5 px-5 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-300/40 hover:bg-white/10"
-              >
-                Refresh data
-              </button>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="glass-panel stat-card rounded-2xl p-4">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Total</p>
-                <p className="mt-3 text-2xl font-semibold text-slate-100">{totalMarkets}</p>
-              </div>
-              <div className="glass-panel stat-card rounded-2xl p-4">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Open</p>
-                <p className="mt-3 text-2xl font-semibold text-slate-100">{openMarkets}</p>
-              </div>
-              <div className="glass-panel stat-card rounded-2xl p-4">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Resolved</p>
-                <p className="mt-3 text-2xl font-semibold text-slate-100">{resolvedMarkets}</p>
-              </div>
-            </div>
+            <a
+              href="#create"
+              className="glow-pill inline-block rounded-full bg-gradient-to-r from-emerald-300 via-cyan-300 to-amber-300 px-5 py-2 text-sm font-semibold text-slate-900 shadow-[0_18px_30px_rgba(11,24,32,0.4)] transition hover:brightness-110"
+            >
+              Create prediction market
+            </a>
           </div>
 
           <div className="glass-panel flex h-full flex-col justify-between rounded-3xl p-6 reveal-up reveal-up-delay-2">
             <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Market pulse</p>
-              <h3 className="mt-3 text-2xl font-semibold text-slate-100">Live data, no fillers.</h3>
+              <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Create</p>
+              <h3 className="mt-3 text-2xl font-semibold text-slate-100">New prediction market</h3>
               <p className="mt-3 text-sm text-slate-400">
-                The UI only renders what the API returns. If the list is empty, it means the backend
-                has no markets yet.
+                Enter a question below. Markets are created via the API; no need to load or refresh a list first.
               </p>
             </div>
             <div className="mt-6 space-y-4 text-sm text-slate-300">
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">API endpoint</span>
-                <span className="text-slate-200">{apiUrl}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">Last updated</span>
-                <span className="text-slate-200">{lastUpdatedLabel}</span>
+                <span className="text-slate-400">API</span>
+                <span className="text-slate-200 truncate max-w-[180px]" title={apiUrl}>{apiUrl}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">Wallet network</span>
                 <span className="text-slate-200">{network}</span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => void refresh()}
-              className="mt-6 w-full rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-300/40 hover:bg-white/10"
-            >
-              Refresh markets
-            </button>
+          </div>
+        </section>
+
+        <section id="create" className="mt-14">
+          <h2 className="font-display text-3xl text-slate-100">Create a new prediction market</h2>
+          <p className="mt-2 text-sm text-slate-400">
+            Enter your market question and create it. You can then bet on it or view it in the list below.
+          </p>
+          <div className="mt-6">
+            <CreateMarketForm
+              apiUrl={apiUrl}
+              onCreated={() => void refresh()}
+            />
           </div>
         </section>
 
         <section id="markets" className="mt-14">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <h2 className="font-display text-3xl text-slate-100">Live Markets</h2>
+              <h2 className="font-display text-2xl text-slate-100">Existing markets</h2>
               <p className="text-sm text-slate-400">
-                Create your own prediction market or bet on existing ones.
+                Optional: load and view markets to bet on.
               </p>
             </div>
             <button
               type="button"
               onClick={() => void refresh()}
-              className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-300/40 hover:bg-white/10"
+              disabled={loading}
+              className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-300/40 hover:bg-white/10 disabled:opacity-50"
             >
-              Refresh list
+              {loading ? "Loading…" : "View markets"}
             </button>
           </div>
-          <div className="mt-6 space-y-6">
-            <CreateMarketForm
-              apiUrl={apiUrl}
-              onCreated={() => void refresh()}
-            />
+          <div className="mt-6">
             <MarketsList markets={markets} loading={loading} error={error} />
           </div>
         </section>

@@ -1,10 +1,10 @@
-# 🚀 Getting Started with Invisible DEX
+# 🚀 Invisible DEX
 
 ## Welcome
 
-This repo is a **build guide and codebase** for building **The Invisible DEX** yourself — a hybrid prediction market (Sui + Yellow Network) for fast, low-cost betting on live events. You're building the app on your machine; this README is for you as the developer, not for showing or demoing anything to others.
+This repo is a **build guide and codebase** for **The Invisible DEX** — a hybrid prediction market (Sui + Yellow Network) for fast, low-cost betting on live events.
 
-Use this guide to go from zero to a working application in under 30 minutes.
+**This README is an overview and index only.** Step-by-step instructions (setup, usage, APIs, deployment) live in the linked docs (SETUP.md, USER_GUIDE.md, docs/). Do not add full instructions here.
 
 ---
 
@@ -35,41 +35,15 @@ A true hybrid architecture:
 
 ---
 
-## 🎯 Quick Start (Choose Your Path)
+## 🎯 Quick Start
 
-### Path 1: Automated Setup (Recommended)
+- **Automated:** Run the setup script — see [SETUP.md](./SETUP.md).
+- **Manual:** Full setup steps are in [SETUP.md](./SETUP.md).
+- **Using the app (testnet):** [USER_GUIDE.md](./USER_GUIDE.md).
+- **Deploy on Vercel:** [docs/DEPLOY_VERCEL.md](docs/DEPLOY_VERCEL.md).
+- **APIs and keys:** [docs/HOW_TO_GET_SUI_RPC.md](docs/HOW_TO_GET_SUI_RPC.md), [docs/HOW_TO_GET_SEPOLIA_RPC.md](docs/HOW_TO_GET_SEPOLIA_RPC.md), [docs/HOW_TO_GET_YELLOW_API.md](docs/HOW_TO_GET_YELLOW_API.md), [docs/HOW_TO_GET_BACKEND_API.md](docs/HOW_TO_GET_BACKEND_API.md).
 
-```bash
-git clone https://github.com/AkakpoErnest/invisible-dex.git
-cd invisible-dex
-
-chmod +x quick-start.sh
-./quick-start.sh
-```
-
-The script will:
-
-- ✅ Check prerequisites
-- ✅ Install dependencies
-- ✅ Point you to Sui wallet and env setup
-- ✅ Guide you through deploy and dev servers
-
-**Time:** ~10 minutes
-
-### Path 2: Manual Setup
-
-Follow the step-by-step guide in [SETUP.md](./SETUP.md) to build and run everything yourself.
-
-**Time:** ~20–30 minutes
-
-### Path 3: Explore the Code First
-
-If you prefer to read before running, the codebase is documented:
-
-- **Smart contracts:** `contracts/sources/`
-- **Frontend:** `frontend/src/`
-- **Backend:** `server/src/`
-- **Documentation:** `docs/`
+All step-by-step instructions live in those docs, not in this README.
 
 ---
 
@@ -186,142 +160,12 @@ Winners receive payouts
 
 ---
 
-## 📖 Step-by-Step Implementation Guide
+## 📖 Where to Find Instructions
 
-### Step 1: Environment Setup (5 min)
-
-```bash
-# Install prerequisites
-# - Node.js 18+
-# - Sui CLI
-# - Git
-
-# Clone and install
-git clone <repo>
-cd invisible-dex
-npm install
-```
-
-### Step 2: Sui Wallet Setup (3 min)
-
-```bash
-# Create wallet
-sui client new-address ed25519
-
-# Get testnet tokens
-sui client faucet
-
-# Verify balance
-sui client gas
-```
-
-### Step 3: Deploy Smart Contracts (5 min)
-
-```bash
-cd contracts
-
-# Build
-sui move build
-
-# Deploy
-sui client publish --gas-budget 100000000
-
-# Save Package ID
-```
-
-### Step 4: Configure Yellow Network (5 min)
-
-```bash
-# Get API key from Yellow Network
-# https://docs.yellow.org
-
-# Update server/.env
-YELLOW_WS_ENDPOINT=wss://clearnet.yellow.com/ws
-YELLOW_API_KEY=your_key_here
-```
-
-### Step 5: Start Development Servers (2 min)
-
-```bash
-# Terminal 1: Backend
-cd server && npm run dev
-
-# Terminal 2: Frontend
-cd frontend && npm run dev
-```
-
-### Step 6: Run and Test Locally (5 min)
-
-Open http://localhost:5173 on your machine and confirm:
-
-1. Wallet connects ✓
-2. Test market loads ✓
-3. You can place a bet ✓
-4. Real-time updates work ✓
-5. Settlement flow works ✓
-
----
-
-## 🧪 Testing Your Build
-
-### Smart Contract Tests
-
-```bash
-cd contracts
-sui move test
-
-# Expected: All tests pass ✓
-```
-
-### Integration Test
-
-```bash
-# Run end-to-end test
-npm run test:integration
-
-# This tests:
-# 1. Contract deployment ✓
-# 2. Yellow Network connection ✓
-# 3. Bet placement ✓
-# 4. Settlement ✓
-```
-
-### Manual Testing Checklist
-
-- [ ] Wallet connects successfully
-- [ ] Can view available markets
-- [ ] Can place a bet (minimum 0.01 USDC)
-- [ ] Bet appears instantly in UI
-- [ ] Real-time odds update
-- [ ] Settlement completes
-- [ ] Winnings received
-
----
-
-## 🚢 Deployment to Testnet
-
-Once everything works locally:
-
-```bash
-# 1. Build production bundles
-npm run build:all
-
-# 2. Deploy contracts to testnet
-cd contracts
-sui client switch --env testnet
-sui client publish --gas-budget 100000000
-
-# 3. Deploy backend (choose platform)
-# - Heroku: heroku create && git push heroku main
-# - Railway: railway up
-# - VPS: See docs/DEPLOYMENT.md
-
-# 4. Deploy frontend
-# - Vercel: vercel --prod
-# - Netlify: netlify deploy --prod
-```
-
-Detailed guide: [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
+- **Setup, env, contracts, Yellow:** [SETUP.md](./SETUP.md)
+- **Run and use the app (testnet):** [USER_GUIDE.md](./USER_GUIDE.md)
+- **Testing:** See [SETUP.md](./SETUP.md) and `npm run test:integration`
+- **Deployment:** [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md); **Vercel:** [docs/DEPLOY_VERCEL.md](./docs/DEPLOY_VERCEL.md)
 
 ---
 
@@ -369,41 +213,7 @@ Detailed guide: [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
 
 ## 🐛 Troubleshooting
 
-### Common Issues
-
-**Issue: Sui CLI not found**
-
-```bash
-# Solution
-curl --proto '=https' --tlsv1.2 -sSf \
-  https://raw.githubusercontent.com/MystenLabs/sui/main/scripts/install.sh | sh
-export PATH="$HOME/.sui/bin:$PATH"
-```
-
-**Issue: Yellow Network connection fails**
-
-```bash
-# Check API key
-echo $YELLOW_API_KEY
-
-# Verify endpoint
-curl -v wss://clearnet.yellow.com/ws
-```
-
-**Issue: Contract deployment fails**
-
-```bash
-# Check balance
-sui client gas
-
-# Request more tokens
-sui client faucet
-
-# Increase gas budget
-sui client publish --gas-budget 200000000
-```
-
-Need more help? See [SETUP.md](./SETUP.md)
+See [SETUP.md](./SETUP.md) and [USER_GUIDE.md](./USER_GUIDE.md). For APIs and keys, use the [docs/HOW_TO_GET_*](docs/) guides.
 
 ---
 
@@ -415,26 +225,8 @@ If you later open-source or share this project, see [CONTRIBUTING.md](./CONTRIBU
 
 ## 💡 Pro Tips
 
-### Development
-
-- Use the quick-start script - it saves time
-- Keep multiple terminal windows open (backend, frontend, logs)
-- Use Sui explorer to verify transactions
-- Test on testnet before mainnet
-
-### Debugging
-
-- Check browser console for frontend errors
-- Check server logs for backend issues
-- Use `sui client tx <digest>` to debug transactions
-- Yellow Network has good error messages
-
-### Performance
-
-- Batch operations in PTBs
-- Use WebSocket for real-time updates
-- Cache market data on frontend
-- Optimize Three.js rendering
+- Use [SETUP.md](./SETUP.md) and [USER_GUIDE.md](./USER_GUIDE.md) for all how-to steps.
+- Test on testnet before mainnet. Use browser console and server logs for debugging.
 
 ---
 
@@ -515,15 +307,4 @@ This project is licensed under the MIT License - see [LICENSE](./LICENSE) file f
 
 ## ⏭️ Start Building
 
-```bash
-git clone https://github.com/AkakpoErnest/invisible-dex.git
-cd invisible-dex
-
-./quick-start.sh
-
-# or follow the detailed guide
-cat SETUP.md
-
-# then code
-cursor .  # or: code .
-```
+Clone the repo, then follow [SETUP.md](./SETUP.md) or [USER_GUIDE.md](./USER_GUIDE.md). Do not rely on this README for step-by-step instructions.

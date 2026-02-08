@@ -122,21 +122,25 @@ export function MarketCard({ market }: Props) {
               No
             </button>
           </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-2">
+              <label className="sr-only" htmlFor={`amount-${market.id}`}>
+                Bet amount
+              </label>
               <input
+                id={`amount-${market.id}`}
                 type="number"
                 min="0"
                 step="any"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Amount"
-                className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-300/60 focus:outline-none focus:ring-2 focus:ring-emerald-300/20"
+                placeholder="0"
+                className="h-10 w-24 shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center text-sm tabular-nums text-slate-100 placeholder:text-slate-500 focus:border-emerald-300/50 focus:outline-none focus:ring-2 focus:ring-emerald-300/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
               <button
                 type="button"
                 onClick={handleBet}
                 disabled={submitting || !isAmountValid}
-                className="glow-pill w-full rounded-full bg-gradient-to-r from-emerald-300 via-cyan-300 to-amber-300 px-4 py-2 text-sm font-semibold text-slate-900 shadow-[0_18px_30px_rgba(11,24,32,0.4)] transition hover:brightness-110 disabled:opacity-50"
+                className="h-10 flex-1 min-w-0 rounded-xl bg-emerald-400/90 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-emerald-300 disabled:opacity-50 disabled:pointer-events-none"
               >
                 {submitting ? "Placing…" : "Place bet"}
               </button>

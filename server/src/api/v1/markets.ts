@@ -37,8 +37,9 @@ marketsV1Router.get("/:marketId", async (req, res) => {
   if (marketId.startsWith("0x") && suiService.isConfigured()) {
     try {
       const chainObj = await suiService.getMarket(marketId);
-      if (chainObj?.data && "content" in chainObj.data && chainObj.data.content?.dataType === "moveObject") {
-        const fields = (chainObj.data.content as { fields: Record<string, unknown> }).fields as Record<string, unknown>;
+      const content = chainObj?.data?.content as { dataType?: string; fields?: Record<string, unknown> } | undefined;
+      if (content?.dataType === "moveObject" && content.fields) {
+        const fields = content.fields as Record<string, unknown>;
         const question = typeof fields.question === "string" ? fields.question : String(fields.question ?? "");
         const resolved = Boolean(fields.resolved);
         const winningOutcome = typeof fields.winning_outcome === "number" ? fields.winning_outcome : null;
