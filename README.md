@@ -2,6 +2,38 @@
 
 Invisible DEX is a hybrid prediction market: Sui for on-chain settlement and Yellow Network (Nitrolite) for off-chain micro-bets. This README is an overview and index only. Step-by-step instructions live in the linked docs.
 
+## The Problem We're Solving
+
+Traditional prediction markets struggle with live, high-frequency betting:
+
+- On-chain execution is too slow for per-play or per-second decisions.
+- Off-chain systems are fast but centralized and hard to audit.
+- Hybrid systems are complex and costly to settle fairly.
+
+## Why We Need This App
+
+We need a product that makes real-time prediction markets practical for users and operators:
+
+- **Speed without trust tradeoffs:** instant bets, but still verifiable settlement.
+- **Lower costs:** off-chain execution for micro-bets, on-chain only for final settlement.
+- **Better UX:** users can place frequent, small bets without waiting on block confirmations.
+- **Open and auditable:** outcomes are finalized on-chain, not inside a closed system.
+
+## Our Solution
+
+Invisible DEX combines off-chain speed with on-chain finality:
+
+- **Yellow Network** handles instant micro-bets off-chain.
+- **Sui** settles outcomes on-chain with predictable finality.
+- Users get speed without giving up verifiability.
+
+## Tech Stack
+
+- **Frontend:** React 18, TypeScript, Vite, TailwindCSS, @mysten/dapp-kit
+- **Backend:** Node.js, Express, WebSocket, Pino
+- **Blockchain:** Sui Move contracts + Sui TypeScript SDK
+- **State channels:** Yellow Network (Nitrolite SDK)
+
 ## Quick start (links)
 
 - Setup and local run: `SETUP.md`
@@ -11,7 +43,7 @@ Invisible DEX is a hybrid prediction market: Sui for on-chain settlement and Yel
 - Yellow SDK setup: `docs/YELLOW_SDK_SETUP.md`
 - API reference: `docs/API.md`
 
-## Current functionality (no mock data)
+## Current functionality
 
 - Wallet gate: connect a Sui wallet to use the app.
 - Create market: on-chain if `VITE_PREDICTION_MARKET_PACKAGE` is set; otherwise via API (in-memory).
@@ -19,7 +51,10 @@ Invisible DEX is a hybrid prediction market: Sui for on-chain settlement and Yel
 - Place bet: sends to backend API and stores in-memory; on-chain bet flow is not wired yet.
 - Yellow: `npm run demo:yellow` runs an off-chain transfer via the Nitrolite SDK; `/health` reports Yellow connected when env is set.
 
-## Deployed contracts and integration
+## How We Use Sui and Yellow Network
+
+- **Sui:** One Move package (`prediction_market`) on testnet. The frontend builds a PTB to call `create_and_share_market`, and the server reads `MarketCreated` events to list on-chain markets.
+- **Yellow:** Nitrolite SDK is used in the demo script (`npm run demo:yellow`) for off-chain transfer and in `/health` to show connection status when env is set.
 
 | Where | Sui (testnet) | Yellow Network (Sepolia) |
 | --- | --- | --- |
