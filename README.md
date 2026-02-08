@@ -79,15 +79,7 @@ Full addresses and IDs: [docs/DEPLOYED_CONTRACTS.md](docs/DEPLOYED_CONTRACTS.md)
 4. **Place bet** → User picks outcome (Yes/No) and amount; frontend sends `POST /api/bets` with `marketId`, `outcome`, `amount`, and wallet `user`. Backend stores the bet in-memory. Pool display may not update until the backend adds pool aggregation.
 5. **Yellow** → Used for health and the standalone Nitrolite demo (auth + off-chain transfer). Full “instant bet via Yellow then settle on Sui” is the target design; current UI bet goes to the API only.
 
-**How to use it**
-
-1. **Run:** From repo root, `npm run install:all` then `npm run dev:all`. Backend at **http://localhost:3001**, frontend at **http://localhost:5173**.
-2. **Open** http://localhost:5173 and **connect** your Sui wallet (testnet). Get testnet SUI from [faucet.sui.io](https://faucet.sui.io) if you will create on-chain markets.
-3. **Create a market:** Enter a question and click **Create market**. (With package ID in env, it’s on-chain; otherwise API-only.)
-4. **View markets:** Click **View markets** to load the list. Create one first if the list is empty.
-5. **Place a bet:** On a market card, choose Yes or No, enter an amount, click **Place bet**. Success message confirms the bet was sent to the API.
-
-For more detail: [USER_GUIDE.md](./USER_GUIDE.md). For current status and next steps: [STATUS_AND_NEXT_STEPS.md](./STATUS_AND_NEXT_STEPS.md).
+**How to use it:** Step-by-step run, connect wallet, create market, view markets, and place bet → [USER_GUIDE.md](./USER_GUIDE.md). Current status and next steps → [STATUS_AND_NEXT_STEPS.md](./STATUS_AND_NEXT_STEPS.md).
 
 ---
 
